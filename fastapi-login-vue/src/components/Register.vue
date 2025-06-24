@@ -39,7 +39,6 @@ const registerData = ref({
 const submitRegister = async () => {
   try {
     const response = await axios.post('http://localhost:8000/register', registerData.value);
-    alert('注册成功，请登录');
     window.location.href = '/login';
   } catch (error) {
     if (error.response && error.response.data && error.response.data.detail) {

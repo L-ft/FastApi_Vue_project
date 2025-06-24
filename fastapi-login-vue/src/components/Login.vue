@@ -51,7 +51,6 @@ const submitLogin = async () => {
       password: loginData.value.password
     }));
     localStorage.setItem('token', response.data.access_token);
-    alert('登录成功');
     window.location.href = '/home';
   } catch (error) {
     if (error.response && error.response.data && error.response.data.detail) {
