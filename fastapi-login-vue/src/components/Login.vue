@@ -20,8 +20,10 @@
           <input type="password" v-model="loginData.password" class="auth-input" placeholder="密码" autocomplete="current-password" />
           <div class="auth-row">
             <label class="remember-me"><input type="checkbox" v-model="rememberMe" /> 记住我</label>
-            <a class="forgot-link" href="#">忘记密码？</a>
-            <button type="submit" class="register-link">注册</button>
+            <div class="right-links">
+              <a class="forgot-link" href="#">忘记密码？</a>
+              <button type="button" class="register-btn" @click="goToRegister">注册</button>
+            </div>
           </div>
           <button type="submit" class="auth-btn">登录系统</button>
         </form>
@@ -58,6 +60,10 @@ const submitLogin = async () => {
       alert('登录失败，请检查用户名和密码');
     }
   }
+};
+
+const goToRegister = () => {
+  window.location.href = '/register';
 };
 </script>
 
@@ -179,11 +185,24 @@ const submitLogin = async () => {
   font-size: 0.98em;
   text-decoration: none;
 }
-.register-link {
+.right-links {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+.register-btn {
+  background: none;
+  border: none;
   color: #4f8cff;
   font-size: 0.98em;
-  text-decoration: none;
   cursor: pointer;
+  padding: 0 0.2em;
+  margin-left: 0.2em;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.register-btn:hover {
+  color: #00eaff;
 }
 .auth-btn {
   width: 100%;
@@ -213,5 +232,11 @@ const submitLogin = async () => {
   color: #bbb;
   font-size: 0.95em;
   text-align: center;
+}
+</style>
+<style>
+body, #app {
+  margin: 0;
+  padding: 0;
 }
 </style>
