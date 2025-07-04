@@ -4,11 +4,7 @@
       <span class="title">🤖 AI 平台首页</span>
       <button @click="logout">退出登录</button>
     </div>
-
-    <div class="welcome-box">
-      <h1>欢迎，{{ username }}</h1>
-      <p>这是你的平台主页，你可以在这里扩展更多功能。</p>
-    </div>
+    <ApiManage />
   </div>
 </template>
 
@@ -16,6 +12,7 @@
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
+import ApiManage from './components/ApiManage.vue'
 
 const API = 'http://127.0.0.1:8000'
 const router = useRouter()
@@ -78,21 +75,5 @@ button {
 
 button:hover {
   background-color: #0056b3;
-}
-
-.welcome-box {
-  text-align: center;
-  margin-top: 100px;
-}
-
-.welcome-box h1 {
-  font-size: 32px;
-  color: #007bff;
-}
-
-.welcome-box p {
-  font-size: 16px;
-  margin-top: 10px;
-  color: #555;
 }
 </style>
