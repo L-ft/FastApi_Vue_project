@@ -25,7 +25,7 @@
           <el-table-column prop="name" label="名称" width="150" />
           <el-table-column prop="url" label="URL" width="200" />
           <el-table-column prop="method" label="方法" width="100" />
-          <el-table-column prop="group" label="分组" width="100" />
+          <el-table-column prop="group_name" label="分组" width="100" />
           <el-table-column prop="desc" label="描述" />
           <el-table-column label="操作" width="160">
             <template #default="scope">
@@ -80,24 +80,13 @@
 import { ref, computed } from 'vue'
 import { getApiList, deleteApi, addApi, updateApi } from '../api/apiManage'
 import { getApiGroups } from '../api/apiManage'
+// import { fetchApis} from '../api/fetchApis'
 
 
 // 接口相关
 const pagedApis = ref([])
 const selectedGroup = ref(null)
 const search = ref('')
-
-const fetchApis = async () => {
-  const res = await getApiList()
-  let data = res.data
-  if (selectedGroup.value) {
-    data = data.filter(api => api.group_id === selectedGroup.value)
-  }
-  if (search.value) {
-    data = data.filter(api => api.name.includes(search.value) || api.url.includes(search.value))
-  }
-  pagedApis.value = data
-}
 
 // 新增接口弹窗相关
 const apiDialogVisible = ref(false)
@@ -110,11 +99,6 @@ const apiForm = ref({
 })
 
 const groups = ref([]) // 确保 groups 有定义
-
-const fetchGroups = async () => {
-  const res = await getApiGroups()
-  groups.value = res.data
-}
 // 更新接口
 const isEdit = ref(false) // 标记是否为编辑状态
 
@@ -156,7 +140,30 @@ const pagedApiList = computed(() => {
   const start = (apiPage.value - 1) * apiPageSize.value
   return pagedApis.value.slice(start, start + apiPageSize.value)
 })
-// 初始化
+
+
+const fetchApis = async () => {
+  const res = await getApiList()
+  let data = res.data
+  if (selectedGroup.value) {
+    data = data.filter(api => api.group_id === selectedGroup.value)
+  }
+  if (search.value) {
+    data = data.filter(api => api.name.includes(search.value) || api.url.includes(search.value))
+  }
+  data = data.map(api => ({
+    ...api,
+    group_name: groups.value.find(g => g.id === api.group_id)?.name || ''
+  }))
+  pagedApis.value = data
+}
+
+const fetchGroups = async () => {
+  const res = await getApiGroups()
+  groups.value = res.data
+  await fetchApis()
+}
+
+// 页面初始化时只调用 fetchGroups
 fetchGroups()
-fetchApis()
 </script>
