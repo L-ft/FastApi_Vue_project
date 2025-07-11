@@ -4,6 +4,9 @@ from ..db import get_db
 from ..models import ApiGroup, ApiInfo
 from ..schemas import ApiGroupCreate, ApiGroupOut, ApiInfoCreate, ApiInfoOut
 
+# 导入新增的ApiGroupUpdate模型
+from ..schemas import ApiGroupUpdate
+
 router = APIRouter(prefix="/api", tags=["API管理"])
 
 # API分组
@@ -33,7 +36,49 @@ def create_group(group: ApiGroupCreate, db: Session = Depends(get_db)):
 #   ApiGroup对象列表
 def list_groups(db: Session = Depends(get_db)):
     return db.query(ApiGroup).all()
- 
+
+# 添加更新和删除API分组的路由
+@router.put("/group/{group_id}", response_model=ApiGroupOut)
+def update_group(group_id: int, group: ApiGroupUpdate, db: Session = Depends(get_db)):
+    """
+    更新指定ID的API分组信息
+
+    参数:
+    group_id (int): 要更新的分组ID
+    group (ApiGroupUpdate): 包含更新信息的对象
+    db (Session): 数据库会话对象
+
+    返回:
+    ApiGroup: 更新后的分组对象
+    """
+    db_group = db.query(ApiGroup).filter(ApiGroup.id == group_id).first()
+    if not db_group:
+        raise HTTPException(status_code=404, detail="分组不存在")
+    if group.name is not None:
+        db_group.name = group.name
+    db.commit()
+    db.refresh(db_group)
+    return db_group
+
+@router.delete("/group/{group_id}")
+def delete_group(group_id: int, db: Session = Depends(get_db)):
+    """
+    删除指定ID的API分组
+
+    参数:
+    group_id (int): 要删除的分组ID
+    db (Session): 数据库会话对象
+
+    返回:
+    dict: 删除操作结果消息
+    """
+    db_group = db.query(ApiGroup).filter(ApiGroup.id == group_id).first()
+    if not db_group:
+        raise HTTPException(status_code=404, detail="分组不存在")
+    db.delete(db_group)
+    db.commit()
+    return {"msg": "分组删除成功"}
+
 # API接口
 # 新增接口
 @router.post("/info", response_model=ApiInfoOut)

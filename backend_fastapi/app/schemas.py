@@ -49,6 +49,15 @@ class ApiGroupOut(BaseModel):
     class Config:
         orm_mode = True
 
+class ApiGroupUpdate(BaseModel):
+    """
+    更新API组的请求数据模型
+
+    Attributes:
+        name (Optional[str]): API组名称，可选字段
+    """
+    name: Optional[str] = None
+
 class ApiInfoCreate(BaseModel):
     """
     创建API信息的请求数据模型

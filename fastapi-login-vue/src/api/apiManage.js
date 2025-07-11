@@ -12,6 +12,15 @@ export function addApiGroup(data) {
   return axios.post(`${base}/group`, data)
 }
 
+// 更新接口分组
+export function update_group(group_id, data) {
+  return axios.put(`/api/group/${group_id}`, data)
+}
+// 删除接口分组
+export function delete_group(group_id) {
+  return axios.delete(`/api/group/${group_id}`)
+}
+
 // 获取接口列表
 export function getApiList() {
   return axios.get(`${base}/info`)
