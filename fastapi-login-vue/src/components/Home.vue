@@ -43,19 +43,28 @@ const logout = () => {
 <style scoped>
 .home-container {
   min-height: 100vh;
+  height: 100vh;
   background: linear-gradient(135deg, #f5faff, #f0f9ff);
   font-family: "Segoe UI", sans-serif;
   color: #333;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+}
+
+:global(body), :global(#app) {
+  height: 100vh;
+  min-height: 100vh;
+  overflow: hidden !important;
 }
 
 .navbar {
   display: flex;
   justify-content: space-between;
   padding: 20px;
-  background: #ffffffcc;
+  background: #fff;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  border-bottom: 1px solid #e6e6e6;
 }
 
 .title {

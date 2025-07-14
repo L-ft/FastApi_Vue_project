@@ -1,6 +1,6 @@
 <template>
-  <el-container style="height: 100vh;">
-    <el-main>
+  <el-container style="height: 100vh; display: flex; justify-content: center;">
+    <el-main style="max-width: 1200px; width: 100%;">
       <!-- 接口管理页面 -->
       <div>
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
