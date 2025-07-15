@@ -3,14 +3,18 @@
     <el-main class="main-content">
       <div class="content-wrapper">
         <div class="header-section">
-          <div>
-            <el-button type="primary" @click="showAddDialog = true" style="margin-right: 10px;">新增分组</el-button>
+          <div class="left-section">
             <el-input
               v-model="searchGroup"
-              placeholder="查询分组"
-              style="width: 200px;"
+              placeholder="搜索分组名称"
+              style="width: 220px;"
               clearable
+              @keyup.enter="handleSearch"
             />
+            <el-button type="primary" @click="handleSearch">查询</el-button>
+          </div>
+          <div class="right-section">
+            <el-button type="primary" @click="showAddDialog = true">新增分组</el-button>
           </div>
         </div>
         <div class="table-section" style="overflow-x:auto;">
@@ -123,8 +127,14 @@ const handleDeleteGroupConfirm = async () => {
   deleteGroupRow.value = null
 }
 
+const handleSearch = () => {
+  // 重置分页到第一页
+  groupPage.value = 1
+  // filteredGroups computed 属性会自动根据 searchGroup 值过滤结果
+}
+
 const filteredGroups = computed(() =>
-  groups.value.filter(g => g.name.includes(searchGroup.value))
+  groups.value.filter(g => g.name.toLowerCase().includes(searchGroup.value.toLowerCase().trim()))
 )
 
 const groupPage = ref(1)
@@ -168,7 +178,7 @@ fetchGroups()
   background: #fff;
   padding: 20px;
   display: flex;
-  justify-content: flex-start;
+  justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
   gap: 16px;
@@ -179,6 +189,19 @@ fetchGroups()
               0 4px 6px -1px rgba(0, 0, 0, 0.03);
   background: linear-gradient(to bottom, #ffffff, #fafafa);
   border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.left-section {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.right-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .table-section {
@@ -199,6 +222,19 @@ fetchGroups()
   display: flex;
   justify-content: flex-end;
   border-top: 1px solid #e4e7ed;
+}
+
+@media (max-width: 768px) {
+  .header-section {
+    flex-direction: column;
+    align-items: stretch;
+    
+    .left-section,
+    .right-section {
+      width: 100%;
+      justify-content: space-between;
+    }
+  }
 }
   
 </style>

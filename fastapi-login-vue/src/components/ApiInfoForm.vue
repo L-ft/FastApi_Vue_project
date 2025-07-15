@@ -4,7 +4,7 @@
       <!-- 接口管理页面 -->
       <div class="content-wrapper">
         <div class="header-section">
-          <div>
+          <div class="left-section">
             <el-select v-model="selectedGroup" placeholder="选择分组" style="width: 180px" @change="fetchApis">
               <el-option label="全部分组" :value="null" />
               <el-option v-for="g in groups" :key="g.id" :label="g.name" :value="g.id" />
@@ -14,10 +14,11 @@
               placeholder="搜索接口名称/URL"
               style="width: 220px; margin-left: 10px"
               clearable
-              @input="fetchApis"
+              @keyup.enter="handleSearch"
             />
+            <el-button type="primary" style="margin-left: 10px;" @click="handleSearch">查询</el-button>
           </div>
-          <div>
+          <div class="right-section">
             <el-button type="primary" @click="openApiForm()">新增接口</el-button>
           </div>
         </div>
@@ -219,15 +220,23 @@ const pagedApiList = computed(() => {
   return pagedApis.value.slice(start, start + apiPageSize.value)
 })
 
+const handleSearch = async () => {
+  apiPage.value = 1;
+  await fetchApis();
+}
 
 const fetchApis = async () => {
-  const res = await getApiList()
-  let data = res.data
+  const res = await getApiList();
+  let data = res.data;
   if (selectedGroup.value) {
-    data = data.filter(api => api.group_id === selectedGroup.value)
+    data = data.filter(api => api.group_id === selectedGroup.value);
   }
-  if (search.value) {
-    data = data.filter(api => api.name.includes(search.value) || api.url.includes(search.value))
+  if (search.value && search.value.trim()) {
+    const keyword = search.value.trim().toLowerCase();
+    data = data.filter(api =>
+      (api.name && api.name.toLowerCase().includes(keyword)) ||
+      (api.url && api.url.toLowerCase().includes(keyword))
+    );
   }
   data = data.map(api => ({
     ...api,
@@ -259,6 +268,11 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('resize', handleResize)
 })
+
+const openGroupForm = () => {
+  // 触发新增分组事件，您可以根据需要修改实现
+  console.log('Open group form')
+}
 </script>
 
 <style scoped>
@@ -515,21 +529,29 @@ onUnmounted(() => {
     rgba(255,255,255,0) 100%);
 }
 
+.left-section {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.right-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 @media (max-width: 768px) {
   .header-section {
     flex-direction: column;
     align-items: stretch;
-  }
-  
-  .header-section > div {
-    width: 100%;
-    display: flex;
-    gap: 10px;
-  }
-  
-  .header-section .el-input,
-  .header-section .el-select {
-    flex: 1;
+    
+    .left-section,
+    .right-section {
+      width: 100%;
+      justify-content: space-between;
+    }
   }
 }
 
