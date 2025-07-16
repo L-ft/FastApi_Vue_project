@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from ..db import get_db
-from ..models import EnvironmentVariable
+from ..models import EnvironmentVariable as ORMEnvironmentVariable
 from ..schemas import EnvironmentVariableCreate, EnvironmentVariable
 import logging
 
@@ -23,7 +23,7 @@ def read_env_vars(db: Session = Depends(get_db)):
     list[EnvironmentVariable]: 环境变量对象列表
     """
     logger.info("Fetching all environment variables")
-    env_vars = db.query(EnvironmentVariable).all()
+    env_vars = db.query(ORMEnvironmentVariable).all()
     return env_vars
 
 @router.get("/env-vars/{env_var_id}", response_model=EnvironmentVariable)
@@ -42,7 +42,7 @@ def read_env_var(env_var_id: int, db: Session = Depends(get_db)):
     HTTPException: 如果未找到对应ID的环境变量，则抛出404错误
     """
     logger.info(f"Fetching environment variable with ID: {env_var_id}")
-    env_var = db.query(EnvironmentVariable).filter(EnvironmentVariable.id == env_var_id).first()
+    env_var = db.query(ORMEnvironmentVariable).filter(ORMEnvironmentVariable.id == env_var_id).first()
     if not env_var:
         logger.warning(f"Environment variable not found: {env_var_id}")
         raise HTTPException(status_code=404, detail="环境变量不存在")
@@ -60,7 +60,7 @@ def create_env_var(env_var: EnvironmentVariableCreate, db: Session = Depends(get
     返回:
     EnvironmentVariable: 创建成功的环境变量对象
     """
-    db_env_var = EnvironmentVariable(**env_var.dict())
+    db_env_var = ORMEnvironmentVariable(**env_var.dict())
     db.add(db_env_var)
     db.commit()
     db.refresh(db_env_var)
@@ -82,7 +82,7 @@ def update_env_var(env_var_id: int, env_var: EnvironmentVariableCreate, db: Sess
     异常:
     HTTPException: 如果未找到对应ID的环境变量，则抛出404错误
     """
-    db_env_var = db.query(EnvironmentVariable).filter(EnvironmentVariable.id == env_var_id).first()
+    db_env_var = db.query(ORMEnvironmentVariable).filter(ORMEnvironmentVariable.id == env_var_id).first()
     if not db_env_var:
         raise HTTPException(status_code=404, detail="环境变量不存在")
     for key, value in env_var.dict().items():
@@ -106,7 +106,7 @@ def delete_env_var(env_var_id: int, db: Session = Depends(get_db)):
     异常:
     HTTPException: 如果未找到对应ID的环境变量，则抛出404错误
     """
-    db_env_var = db.query(EnvironmentVariable).filter(EnvironmentVariable.id == env_var_id).first()
+    db_env_var = db.query(ORMEnvironmentVariable).filter(ORMEnvironmentVariable.id == env_var_id).first()
     if not db_env_var:
         raise HTTPException(status_code=404, detail="环境变量不存在")
     db.delete(db_env_var)

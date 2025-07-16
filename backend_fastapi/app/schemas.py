@@ -100,8 +100,10 @@ class EnvironmentVariableCreate(BaseModel):
     name: str
     value: str
 
+from typing import Optional
+
 class EnvironmentVariable(EnvironmentVariableCreate):
-    id: int
+    id: Optional[int] = None
 
     class Config:
         orm_mode = True
