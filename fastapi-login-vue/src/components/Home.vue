@@ -1,7 +1,7 @@
 <template>
   <div class="home-container">
     <div class="navbar">
-      <span class="title">🤖 AI 平台首页</span>
+      <span class="title">🤖 自动化平台</span>
       <button @click="logout">退出登录</button>
     </div>
     <ApiManage />

@@ -54,3 +54,19 @@ class ApiInfo(Base):
     method = Column(String(10), nullable=False)
     group_id = Column(Integer, ForeignKey("api_group.id"))
     description = Column(String(255))
+
+# ---------------- 环境变量模型 ----------------
+class EnvironmentVariable(Base):
+    """
+    环境变量模型
+
+    Attributes:
+        id (int): 环境变量唯一标识
+        name (str): 环境变量名称，100字符内，非空且唯一
+        value (str): 环境变量值，255字符内，非空
+    """
+
+    __tablename__ = "environment_variables"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(100), unique=True, nullable=False)
+    value = Column(String(255), nullable=False)

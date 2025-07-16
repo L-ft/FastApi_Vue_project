@@ -95,3 +95,13 @@ class ApiInfoOut(BaseModel):
     description: Optional[str]
     class Config:
         orm_mode = True
+
+class EnvironmentVariableCreate(BaseModel):
+    name: str
+    value: str
+
+class EnvironmentVariable(EnvironmentVariableCreate):
+    id: int
+
+    class Config:
+        orm_mode = True
