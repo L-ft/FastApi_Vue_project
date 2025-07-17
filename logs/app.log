@@ -317,3 +317,23 @@ AttributeError: module 'bcrypt' has no attribute '__about__'
 2025-07-17 15:00:15,040 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
 2025-07-17 15:00:15,040 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
 2025-07-17 15:00:15,052 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs
+2025-07-17 15:14:31,452 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 15:14:33,911 - python_multipart.multipart - DEBUG - Calling on_field_start with no data
+2025-07-17 15:14:33,911 - python_multipart.multipart - DEBUG - Calling on_field_name with data[0:8]
+2025-07-17 15:14:33,911 - python_multipart.multipart - DEBUG - Calling on_field_data with data[9:14]
+2025-07-17 15:14:33,911 - python_multipart.multipart - DEBUG - Calling on_field_end with no data
+2025-07-17 15:14:33,911 - python_multipart.multipart - DEBUG - Calling on_field_start with no data
+2025-07-17 15:14:33,911 - python_multipart.multipart - DEBUG - Calling on_field_name with data[15:23]
+2025-07-17 15:14:33,911 - python_multipart.multipart - DEBUG - Calling on_field_data with data[24:29]
+2025-07-17 15:14:33,911 - python_multipart.multipart - DEBUG - Calling on_field_end with no data
+2025-07-17 15:14:33,911 - python_multipart.multipart - DEBUG - Calling on_end with no data
+2025-07-17 15:14:34,286 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 15:14:37,405 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 15:14:46,718 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 15:14:47,852 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 15:18:25,720 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 15:18:26,931 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 15:22:10,857 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 15:22:10,858 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 15:22:10,875 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs
+2025-07-17 15:22:11,434 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups

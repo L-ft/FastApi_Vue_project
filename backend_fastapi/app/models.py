@@ -1,3 +1,6 @@
+from datetime import datetime
+from sqlalchemy import DateTime
+
 from .db import Base, engine  # 使用相对导入
 from sqlalchemy import Column, Integer, String, ForeignKey
 
@@ -71,3 +74,56 @@ class EnvironmentVariable(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(100), unique=True, nullable=False)
     value = Column(String(255), nullable=False)
+
+# ---------------- 用例管理模型 ----------------
+class CaseInfo(Base):
+    """
+    用例信息模型
+
+    Attributes:
+        id (int): 用例唯一标识
+        name (str): 用例名称，100字符内，非空
+        description (str): 用例描述，255字符内
+        group_id (int): 所属分组ID，关联api_group.id
+        api_id (int): 所属APIID，关联api_info.id
+        request_data (str): 请求数据，255字符内
+        request_header (str): 请求头，255字符内
+        request_method (str): 请求方法，10字符内
+        request_url (str): 请求地址，255字符内
+        response_data (str): 响应数据，255字符内
+        response_header (str): 响应头，255字符内
+        response_status (int): 响应状态码，10字符内
+        creator (str): 创建人，100字符内
+        create_time (datetime): 创建时间
+        modifier (str): 修改人，100字符内
+        modify_time (datetime): 修改时间
+    """
+
+    __tablename__ = "case_info"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(100), nullable=False)
+    description = Column(String(255))
+    group_id = Column(Integer, ForeignKey("api_group.id"))
+    api_id = Column(Integer, ForeignKey("api_info.id"))
+    request_data = Column(String(255))
+    params = Column(String(1000))  # 可根据实际需要调整长度
+    request_header = Column(String(255))
+    headers = Column(String(1000))  # 可根据实际需要调整长度
+    body = Column(String(2000))  # 可根据实际需要调整长度
+    method = Column(String(10))
+    request_url = Column(String(255))
+    response_data = Column(String(255))
+    response_header = Column(String(255))
+    response_status = Column(String(10))
+    expected_status = Column(Integer)
+    expected_response = Column(String(2000))  # 可根据实际需要调整长度
+    creator = Column(String(100))
+    create_time = Column(DateTime, default=datetime.now)
+    modifier = Column(String(100))
+    modify_time = Column(DateTime, default=datetime.now, onupdate=datetime.now)
+
+    # 注意：params, headers, body, expected_response, response_data, response_header 字段如存储 dict，必须在插入数据库前用 json.dumps 序列化为字符串，否则会报错。
+# 创建所有表（如果不存在）
+# 参数:
+#   bind(engine): 数据库引擎，用于连接数据库并执行创建表操作
+Base.metadata.create_all(bind=engine)

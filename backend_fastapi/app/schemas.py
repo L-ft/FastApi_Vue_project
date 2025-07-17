@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List, Dict, Any
 
 
 # ---------------- 认证Pydantic ----------------
@@ -98,14 +98,165 @@ class ApiInfoOut(BaseModel):
     class Config:
         orm_mode = True
 
+
+# ---------------- 环境变量管理 ----------------
+
 class EnvironmentVariableCreate(BaseModel):
+    """
+    环境变量创建模型
+
+    属性:
+        name (str): 环境变量名称
+        value (str): 环境变量值
+    """
     name: str
     value: str
 
-from typing import Optional
 
 class EnvironmentVariable(EnvironmentVariableCreate):
+    """
+    环境变量数据库模型
+
+    属性:
+        id (Optional[int]): 主键ID（可选）
+        name (str): 继承自父类的环境变量名称
+        value (str): 继承自父类的环境变量值
+
+    嵌套类:
+        Config: ORM配置类
+            orm_mode (bool): 启用ORM模式
+    """
     id: Optional[int] = None
 
     class Config:
         orm_mode = True
+
+# ---------------- 用例管理Pydantic ----------------
+class TestCaseCreate(BaseModel):
+    """
+    用例创建模型
+
+    属性:
+        name (str): 用例名称
+        description (Optional[str]): 用例描述
+        group_id (int): 所属用例组ID
+        api_id (int): 所属APIID
+        method (str): HTTP方法类型
+        url (str): API地址
+        params (Optional[Dict[str, Any]]): 请求参数
+        headers (Optional[Dict[str, Any]]): 请求头
+        body (Optional[Dict[str, Any]]): 请求体
+        expected_status (int): 期望HTTP状态码
+        expected_response (Optional[Dict[str, Any]]): 期望响应体
+    """
+    name: str
+    description: Optional[str]
+    group_id: int
+    api_id: int
+    method: str
+    request_url: str
+    params: Optional[Dict[str, Any]]
+    headers: Optional[Dict[str, Any]]
+    body: Optional[Dict[str, Any]]
+    expected_status: int
+    expected_response: Optional[Dict[str, Any]]
+
+class TestCaseOut(BaseModel):
+    """
+    用例响应模型
+
+    属性:
+        id (int): 用例ID
+        name (str): 用例名称
+        description (Optional[str]): 用例描述
+        group_id (int): 所属用例组ID
+        api_id (int): 所属APIID
+        method (str): HTTP方法类型
+        url (str): API地址
+        params (Optional[Dict[str, Any]]): 请求参数
+        headers (Optional[Dict[str, Any]]): 请求头
+        body (Optional[Dict[str, Any]]): 请求体
+        expected_status (int): 期望HTTP状态码
+        expected_response (Optional[Dict[str, Any]]): 期望响应体
+    """
+    id: int
+    name: str
+    description: Optional[str]
+    group_id: int
+    api_id: int
+    method: str
+    request_url: str
+    params: Optional[Dict[str, Any]]
+    headers: Optional[Dict[str, Any]]
+    body: Optional[Dict[str, Any]]
+    expected_status: int
+    expected_response: Optional[Dict[str, Any]]
+    class Config:
+        orm_mode = True
+
+class TestCaseUpdate(BaseModel):
+    """
+    用例更新模型
+
+    属性:
+        name (Optional[str]): 用例名称
+        description (Optional[str]): 用例描述
+        group_id (Optional[int]): 所属用例组ID
+        api_id (Optional[int]): 所属APIID
+        method (Optional[str]): HTTP方法类型
+        url (Optional[str]): API地址
+        params (Optional[Dict[str, Any]]): 请求参数
+        headers (Optional[Dict[str, Any]]): 请求头
+        body (Optional[Dict[str, Any]]): 请求体
+        expected_status (Optional[int]): 期望HTTP状态码
+        expected_response (Optional[Dict[str, Any]]): 期望响应体
+    """
+    name: Optional[str] = None
+    description: Optional[str] = None
+    group_id: Optional[int] = None
+    api_id: Optional[int] = None
+    method: Optional[str] = None
+    request_url: Optional[str] = None
+    params: Optional[Dict[str, Any]] = None
+    headers: Optional[Dict[str, Any]] = None
+    body: Optional[Dict[str, Any]] = None
+    expected_status: Optional[int] = None
+    expected_response: Optional[Dict[str, Any]] = None
+
+# ---------------- 用例组管理Pydantic ----------------
+class TestCaseGroupCreate(BaseModel):
+    """
+    用例组创建模型
+
+    属性:
+        name (str): 用例组名称
+        description (Optional[str]): 用例组描述
+    """
+    name: str
+    description: Optional[str]
+
+class TestCaseGroupOut(BaseModel):
+    """
+    用例组响应模型
+
+    属性:
+        id (int): 用例组ID
+        name (str): 用例组名称
+        description (Optional[str]): 用例组描述
+    """
+    id: int
+    name: str
+    description: Optional[str]
+    class Config:
+        orm_mode = True
+
+class TestCaseGroupUpdate(BaseModel):
+    """
+    用例组更新模型
+
+    属性:
+        name (Optional[str]): 用例组名称
+        description (Optional[str]): 用例组描述
+    """
+    name: Optional[str] = None
+    description: Optional[str] = None
