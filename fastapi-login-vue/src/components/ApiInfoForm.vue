@@ -28,11 +28,13 @@
             <el-table-column prop="url" label="URL" min-width="180" />
             <el-table-column prop="method" label="方法" min-width="80" />
             <el-table-column prop="group_name" label="分组" min-width="100" />
+            <el-table-column prop="env_name" label="所属环境" min-width="100" />
             <el-table-column prop="description" label="描述" min-width="180" />
-            <el-table-column label="操作" min-width="120" fixed="right">
+            <el-table-column label="操作" min-width="180" fixed="right">
               <template #default="scope">
                 <el-button size="mini" @click="editApi(scope.row)">编辑</el-button>
                 <el-button size="mini" type="danger" @click="handleDeleteApi(scope.row.id)">删除</el-button>
+                <el-button size="mini" type="success" style="color: #222;" @click="runApi(scope.row)">运行</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -46,7 +48,9 @@
             />
           </div>
         </div>
-    </div>
+      </div>
+      
+      <!-- 添加/编辑接口对话框 -->
       <el-dialog 
         v-model="apiDialogVisible" 
         :title="isEdit ? '编辑接口' : '新增接口'" 
@@ -92,7 +96,26 @@
                   </el-select>
                 </el-form-item>
               </el-col>
-              <el-col :span="14">
+              <el-col :span="8">
+                <el-form-item 
+                  label="所属环境" 
+                  prop="env_id"
+                >
+                  <el-select 
+                    v-model="apiForm.env_id" 
+                    placeholder="选择环境"
+                    class="full-width"
+                  >
+                    <el-option 
+                      v-for="e in envs" 
+                      :key="e.id" 
+                      :label="e.name" 
+                      :value="e.id" 
+                    />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
                 <el-form-item 
                   label="所属分组" 
                   required
@@ -148,6 +171,169 @@
           </div>
         </template>
       </el-dialog>
+
+      <!-- 接口调试对话框 -->
+      <el-dialog 
+        v-model="debugDialogVisible" 
+        title="接口调试" 
+        :width="dialogWidth"
+        class="debug-dialog"
+        :close-on-click-modal="false"
+        destroy-on-close
+      >
+        <el-form label-position="top">
+          <!-- 请求方法选择 -->
+          <el-form-item label="请求方法">
+            <el-select v-model="debugMethod" style="width: 120px">
+              <el-option label="GET" value="GET" />
+              <el-option label="POST" value="POST" />
+              <el-option label="PUT" value="PUT" />
+              <el-option label="DELETE" value="DELETE" />
+            </el-select>
+          </el-form-item>
+          <!-- 请求地址输入 -->
+          <el-form-item label="请求地址">
+            <el-input v-model="debugUrl" placeholder="请输入请求地址" />
+          </el-form-item>
+          <!-- 参数类型选择 -->
+          <el-form-item label="参数类型">
+            <div class="param-type-selector">
+              <el-radio-group v-model="debugParamType">
+                <el-radio label="params">Params</el-radio>
+                <el-radio label="json">JSON</el-radio>
+                <el-radio label="form">Form</el-radio>
+              </el-radio-group>
+            </div>
+          </el-form-item>
+
+          <!-- 请求参数表格 -->
+          <el-form-item v-if="debugParamType === 'params'" label="请求参数 (key=value, 多行)">
+            <div class="param-table">
+              <div class="param-table-header">
+                <div class="param-col param-name">参数名</div>
+                <div class="param-col param-value">参数值</div>
+                <div class="param-col param-type">类型</div>
+                <div class="param-col param-desc">说明</div>
+                <div class="param-col param-action">操作</div>
+              </div>
+              <div class="param-table-body">
+                <div v-for="(item, index) in debugParamsList" :key="index" class="param-row">
+                  <el-input v-model="item.key" class="param-name" placeholder="参数名" size="default" />
+                  <el-input v-model="item.value" class="param-value" placeholder="参数值" size="default" />
+                  <el-select v-model="item.type" class="param-type" size="default" placeholder="类型">
+                    <el-option label="string" value="string" />
+                    <el-option label="number" value="number" />
+                    <el-option label="boolean" value="boolean" />
+                    <el-option label="array" value="array" />
+                  </el-select>
+                  <el-input v-model="item.desc" class="param-desc" placeholder="说明" size="default" />
+                  <div class="param-action">
+                    <el-button 
+                      type="danger" 
+                      circle 
+                      size="small"
+                      @click="removeParam(index)"
+                    >
+                      <el-icon><Delete /></el-icon>
+                    </el-button>
+                  </div>
+                </div>
+              </div>
+              <div class="param-add-btn">
+                <el-button type="primary" plain @click="addParam">
+                  <el-icon><Plus /></el-icon>
+                  添加参数
+                </el-button>
+              </div>
+            </div>
+          </el-form-item>
+
+          <!-- JSON参数输入 -->
+          <el-form-item v-if="debugParamType === 'json'" label="请求体 (JSON)">
+            <el-input
+              v-model="debugJson"
+              type="textarea"
+              :rows="4"
+              placeholder="请输入JSON格式的请求体"
+            />
+          </el-form-item>
+
+          <!-- Form参数输入 -->
+          <el-form-item v-if="debugParamType === 'form'" label="Form Data">
+            <el-input
+              v-model="debugForm"
+              type="textarea"
+              :rows="4"
+              placeholder="请输入key=value格式的表单数据，每行一个"
+            />
+          </el-form-item>
+
+          <!-- Header输入 -->
+          <el-form-item label="请求Header (JSON)">
+            <el-input
+              v-model="debugHeaders"
+              type="textarea"
+              :rows="3"
+              placeholder="如: {&quot;Authorization&quot;: &quot;Bearer xxx&quot;}"
+            />
+          </el-form-item>
+
+          <!-- 发送请求按钮 -->
+          <el-form-item>
+            <el-button type="primary" @click="doDebugRequest">发送请求</el-button>
+          </el-form-item>
+
+          <!-- 响应结果部分 -->
+          <el-form-item label="响应结果">
+            <div class="response-panel">
+              <div class="response-header">
+                <el-tabs v-model="activeTab">
+                  <el-tab-pane label="Body" name="body">
+                    <div class="body-tab-content">
+                      <div class="view-options">
+                        <el-radio-group v-model="responseViewType" size="small">
+                          <el-radio-button label="pretty">Pretty</el-radio-button>
+                          <el-radio-button label="raw">Raw</el-radio-button>
+                          <el-radio-button label="preview">Preview</el-radio-button>
+                          <el-radio-button label="visualize">Visualize</el-radio-button>
+                        </el-radio-group>
+                      </div>
+                      <div class="response-status">
+                        <template v-if="debugStatus">状态码: <span :class="{'success-status': debugStatus === 200}">{{debugStatus}}</span></template>
+                        <template v-if="debugTime"> 耗时: {{debugTime}}ms</template>
+                        <template v-if="debugSize"> 大小: {{debugSize}}</template>
+                      </div>
+                    </div>
+                  </el-tab-pane>
+                  <el-tab-pane label="Cookie" name="cookie" />
+                  <el-tab-pane label="Header" name="header" />
+                </el-tabs>
+              </div>
+              
+              <div class="response-content">
+                <template v-if="activeTab === 'body'">
+                  <div v-show="responseViewType === 'pretty'" class="response-view">
+                    <pre v-if="debugResult" class="json-content"><code v-html="highlightedJson(debugResult)"></code></pre>
+                    <div v-else class="empty-content">暂无内容</div>
+                  </div>
+                  <div v-show="responseViewType === 'raw'" class="response-view">
+                    <pre class="raw-content">{{debugResult || '暂无内容'}}</pre>
+                  </div>
+                  <div v-show="responseViewType === 'preview'" class="response-view">
+                    <div class="empty-content">暂不支持</div>
+                  </div>
+                  <div v-show="responseViewType === 'visualize'" class="response-view">
+                    <div class="empty-content">暂不支持</div>
+                  </div>
+                </template>
+                <template v-else>
+                  <div class="empty-content">暂无内容</div>
+                </template>
+              </div>
+            </div>
+          </el-form-item>
+        </el-form>
+      </el-dialog>
     </el-main>
   </el-container>
 </template>
@@ -156,13 +342,18 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { getApiList, deleteApi, addApi, updateApi } from '../api/apiManage'
 import { getApiGroups } from '../api/apiManage'
-// import { fetchApis} from '../api/fetchApis'
-
+import { getEnvironments } from '../api/environmentManage'
+import axios from 'axios'
 
 // 接口相关
 const pagedApis = ref([])
 const selectedGroup = ref(null)
 const search = ref('')
+const activeTab = ref('body')
+const responseViewType = ref('pretty')
+const debugStatus = ref('')
+const debugTime = ref('')
+const debugSize = ref('')
 
 // 新增接口弹窗相关
 const apiDialogVisible = ref(false)
@@ -171,22 +362,40 @@ const apiForm = ref({
   url: '',
   method: '',
   group_id: null,
+  env_id: null,
   description: ''
 })
 
-const groups = ref([]) // 确保 groups 有定义
-// 更新接口
-const isEdit = ref(false) // 标记是否为编辑状态
+const groups = ref([])
+const envs = ref([])
 
+// 调试相关
+const debugDialogVisible = ref(false)
+const debugMethod = ref('GET')
+const debugUrl = ref('')
+const debugParamType = ref('params')
+const debugParamsList = ref([])
+const debugJson = ref('')
+const debugForm = ref('')
+const debugHeaders = ref('')
+const debugResult = ref(null)
+const debugApi = ref(null)
+const isEdit = ref(false)
+const dialogWidth = computed(() => {
+  return window.innerWidth <= 768 ? '98%' : '900px'
+})
+
+// Methods
 const openApiForm = (row = null) => {
   if (row) {
     apiForm.value = {
       ...row,
-      description: row.description || ''
+      description: row.description || '',
+      env_id: row.env_id || null
     }
     isEdit.value = true
   } else {
-    apiForm.value = { name: '', url: '', method: '', group_id: null, description: '' }
+    apiForm.value = { name: '', url: '', method: '', group_id: null, env_id: null, description: '' }
     isEdit.value = false
   }
   apiDialogVisible.value = true
@@ -240,7 +449,8 @@ const fetchApis = async () => {
   }
   data = data.map(api => ({
     ...api,
-    group_name: groups.value.find(g => g.id === api.group_id)?.name || ''
+    group_name: groups.value.find(g => g.id === api.group_id)?.name || '',
+    env_name: envs.value.find(e => e.id === api.env_id)?.name || ''
   }))
   pagedApis.value = data
 }
@@ -250,9 +460,13 @@ const fetchGroups = async () => {
   groups.value = res.data
   await fetchApis()
 }
-
-// 页面初始化时只调用 fetchGroups
+const fetchEnvs = async () => {
+  const res = await getEnvironments()
+  envs.value = res.data
+}
+// 页面初始化时只调用 fetchGroups 和 fetchEnvs
 fetchGroups()
+fetchEnvs()
 
 // 检测屏幕尺寸
 const isSmallScreen = ref(window.innerWidth <= 768)
@@ -261,6 +475,7 @@ const handleResize = () => {
   isSmallScreen.value = window.innerWidth <= 768
 }
 
+// 添加窗口大小监听
 onMounted(() => {
   window.addEventListener('resize', handleResize)
 })
@@ -273,196 +488,133 @@ const openGroupForm = () => {
   // 触发新增分组事件，您可以根据需要修改实现
   console.log('Open group form')
 }
+
+// 调试相关
+const runApi = (row) => {
+  debugApi.value = row
+  debugMethod.value = row.method
+  // 获取环境变量
+  const env = envs.value.find(e => e.id === row.env_id)
+  let baseUrl = ''
+  if (env) baseUrl = env.value
+  debugUrl.value = baseUrl ? baseUrl.replace(/\/$/, '') + row.url : row.url
+  debugParamType.value = 'params'
+  debugParamsList.value = [{ key: '', value: '', type: 'string', desc: '' }]
+  debugJson.value = ''
+  debugForm.value = ''
+  debugHeaders.value = ''
+  debugResult.value = ''
+  debugDialogVisible.value = true
+}
+
+const addParam = () => {
+  debugParamsList.value.push({ key: '', value: '', type: 'string', desc: '' })
+}
+const removeParam = (idx) => {
+  if (debugParamsList.value.length === 1) {
+    debugParamsList.value[0] = { key: '', value: '' }
+  } else {
+    debugParamsList.value.splice(idx, 1)
+  }
+}
+
+const doDebugRequest = async () => {
+  let params = {}
+  let data = undefined
+  let headers = {}
+  // 处理header
+  try {
+    if (debugHeaders.value.trim()) headers = JSON.parse(debugHeaders.value)
+  } catch (e) {
+    debugResult.value = 'Header格式错误，需为JSON字符串'; return
+  }
+  // 处理参数
+  if (debugParamType.value === 'params') {
+    params = {}
+    debugParamsList.value.forEach(item => {
+      if (item.key) {
+        // 类型转换
+        let v = item.value
+        if (item.type === 'number') v = Number(item.value)
+        else if (item.type === 'boolean') v = item.value === 'true' || item.value === true
+        else if (item.type === 'array') {
+          try { v = JSON.parse(item.value) } catch { v = [item.value] }
+        }
+        params[item.key] = v
+      }
+    })
+  } else if (debugParamType.value === 'json') {
+    try {
+      data = debugJson.value.trim() ? JSON.parse(debugJson.value) : undefined
+    } catch (e) {
+      debugResult.value = 'JSON格式错误'; return
+    }
+  } else if (debugParamType.value === 'form') {
+    data = new URLSearchParams()
+    debugForm.value.split('\n').filter(Boolean).forEach(line => {
+      const [k, v] = line.split('=')
+      data.append(k, v)
+    })
+    headers['Content-Type'] = 'application/x-www-form-urlencoded'
+  }
+  // 打印实际请求内容
+  console.log('实际请求：', {
+    url: debugUrl.value,
+    method: debugMethod.value,
+    headers,
+    params,
+    data
+  })
+  const start = Date.now()
+  try {
+    const res = await axios({
+      url: debugUrl.value,
+      method: debugMethod.value.toLowerCase(),
+      headers,
+      params: debugParamType.value === 'params' ? params : undefined,
+      data,
+      responseType: 'text'
+    })
+    debugResult.value = formatJson(res.data)
+    debugStatus.value = res.status
+    debugTime.value = Date.now() - start
+    debugSize.value = res.headers['content-length'] ? res.headers['content-length'] + ' B' : (typeof res.data === 'string' ? (new Blob([res.data]).size + ' B') : '')
+  } catch (err) {
+    debugResult.value = err?.response ? formatJson(err.response.data) : String(err)
+    debugStatus.value = err?.response?.status || ''
+    debugTime.value = Date.now() - start
+    debugSize.value = err?.response?.headers?.['content-length'] ? err.response.headers['content-length'] + ' B' : (err?.response?.data ? (typeof err.response.data === 'string' ? (new Blob([err.response.data]).size + ' B') : '') : '')
+  }
+}
+function highlightedJson(jsonStr) {
+  if (!jsonStr) return ''
+  let html = jsonStr
+  try {
+    const obj = JSON.parse(jsonStr)
+    html = JSON.stringify(obj, null, 2)
+    html = html.replace(/(&)/g, '&amp;').replace(/(\<)/g, '&lt;').replace(/(\>)/g, '&gt;')
+    html = html.replace(/("[^"]+": )/g, '<span class="key">$1</span>')
+      .replace(/(:\s?"[^"]+")/g, '<span class="string">$1</span>')
+      .replace(/(:\s?\d+)/g, '<span class="number">$1</span>')
+      .replace(/(:\s?true|false)/g, '<span class="boolean">$1</span>')
+      .replace(/(:\s?null)/g, '<span class="null">$1</span>')
+  } catch {}
+  return html
+}
+// JSON格式化
+function formatJson(data) {
+  if (typeof data === 'string') {
+    try {
+      return JSON.stringify(JSON.parse(data), null, 2)
+    } catch {
+      return data
+    }
+  }
+  return JSON.stringify(data, null, 2)
+}
 </script>
 
 <style scoped>
-/* 强制提升表单样式优先级，彻底覆盖 Element Plus 默认样式 */
-.api-dialog :deep(.el-dialog),
-.api-dialog >>> .el-dialog {
-  border-radius: 6px !important;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
-  overflow: hidden !important;
-  margin-top: 15vh !important;
-}
-.api-dialog :deep(.el-dialog__header),
-.api-dialog >>> .el-dialog__header {
-  margin: 0 !important;
-  padding: 14px 16px !important;
-  background: #fff !important;
-  border-bottom: 1px solid #f0f0f0 !important;
-}
-.api-dialog :deep(.el-dialog__title),
-.api-dialog >>> .el-dialog__title {
-  font-size: 14px !important;
-  font-weight: 600 !important;
-  color: #111827 !important;
-}
-.api-dialog :deep(.el-dialog__body),
-.api-dialog >>> .el-dialog__body {
-  padding: 0 !important;
-}
-.api-dialog :deep(.el-dialog__footer),
-.api-dialog >>> .el-dialog__footer {
-  margin: 0 !important;
-  padding: 12px 16px !important;
-  background: #f9fafb !important;
-  border-top: 1px solid #f0f0f0 !important;
-}
-.api-dialog :deep(.dialog-footer),
-.api-dialog >>> .dialog-footer {
-  display: flex !important;
-  justify-content: flex-end !important;
-  gap: 8px !important;
-}
-.api-dialog :deep(.el-button),
-.api-dialog >>> .el-button {
-  min-width: 64px !important;
-  height: 32px !important;
-  padding: 0 12px !important;
-  font-size: 13px !important;
-  border-radius: 4px !important;
-}
-.api-dialog :deep(.el-button--primary),
-.api-dialog >>> .el-button--primary {
-  background-color: #1890ff !important;
-  border-color: #1890ff !important;
-}
-.api-dialog :deep(.el-button--primary:hover),
-.api-dialog >>> .el-button--primary:hover {
-  background-color: #40a9ff !important;
-  border-color: #40a9ff !important;
-}
-.api-dialog :deep(.el-button--primary:active),
-.api-dialog >>> .el-button--primary:active {
-  background-color: #096dd9 !important;
-  border-color: #096dd9 !important;
-}
-.api-dialog :deep(.el-button:not(.el-button--primary)),
-.api-dialog >>> .el-button:not(.el-button--primary) {
-  border-color: #e5e7eb !important;
-  color: #374151 !important;
-}
-.api-dialog :deep(.el-button:not(.el-button--primary):hover),
-.api-dialog >>> .el-button:not(.el-button--primary):hover {
-  color: #1890ff !important;
-  border-color: #1890ff !important;
-  background-color: #fff !important;
-}
-
-/* 表单内容样式提升优先级 */
-.api-form :deep(.form-content),
-.api-form >>> .form-content {
-  background: #fff !important;
-  padding: 20px !important;
-}
-.api-form :deep(.el-form-item),
-.api-form >>> .el-form-item {
-  margin-bottom: 20px !important;
-}
-.api-form :deep(.el-form-item__label),
-.api-form >>> .el-form-item__label {
-  padding: 0 0 6px !important;
-  line-height: 1.4 !important;
-  font-size: 13px !important;
-  font-weight: 500 !important;
-  color: #374151 !important;
-  height: auto !important;
-}
-.api-form :deep(.el-form-item__content),
-.api-form >>> .el-form-item__content {
-  line-height: 1 !important;
-}
-.api-form :deep(.el-input__wrapper),
-.api-form >>> .el-input__wrapper {
-  box-shadow: none !important;
-  border: 1px solid #e5e7eb !important;
-  border-radius: 4px !important;
-  padding: 0 11px !important;
-  height: 32px !important;
-  background: #fff !important;
-  transition: all 0.2s !important;
-}
-.api-form :deep(.el-input__wrapper:hover),
-.api-form >>> .el-input__wrapper:hover {
-  border-color: #40a9ff !important;
-  background-color: #fff !important;
-}
-.api-form :deep(.el-input__wrapper.is-focus),
-.api-form >>> .el-input__wrapper.is-focus {
-  border-color: #1890ff !important;
-  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2) !important;
-}
-.api-form :deep(.el-input__inner),
-.api-form >>> .el-input__inner {
-  height: 30px !important;
-  font-size: 13px !important;
-  color: #1f2937 !important;
-  padding: 0 !important;
-}
-.api-form :deep(.el-input__inner::placeholder),
-.api-form >>> .el-input__inner::placeholder {
-  color: #9ca3af !important;
-}
-.api-form :deep(.el-select),
-.api-form >>> .el-select {
-  width: 100% !important;
-}
-.api-form :deep(.el-select.full-width),
-.api-form >>> .el-select.full-width {
-  display: block !important;
-}
-.api-form :deep(.el-select__caret),
-.api-form >>> .el-select__caret {
-  color: #9ca3af !important;
-  font-size: 12px !important;
-  transition: transform 0.2s !important;
-}
-.api-form :deep(.el-form-item__error),
-.api-form >>> .el-form-item__error {
-  font-size: 12px !important;
-  padding-top: 4px !important;
-  color: #dc2626 !important;
-}
-.api-form :deep(.el-textarea__inner),
-.api-form >>> .el-textarea__inner {
-  box-shadow: none !important;
-  padding: 8px 11px !important;
-  min-height: 72px !important;
-  font-size: 13px !important;
-  line-height: 1.6 !important;
-  border: 1px solid #e5e7eb !important;
-  border-radius: 4px !important;
-  background-color: #f9fafb !important;
-  transition: all 0.2s !important;
-  resize: none !important;
-}
-.api-form :deep(.el-textarea__inner:hover),
-.api-form >>> .el-textarea__inner:hover {
-  border-color: #40a9ff !important;
-  background-color: #fff !important;
-}
-.api-form :deep(.el-textarea__inner:focus),
-.api-form >>> .el-textarea__inner:focus {
-  border-color: #1890ff !important;
-  background-color: #fff !important;
-  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2) !important;
-}
-.api-form :deep(.el-textarea__inner::placeholder),
-.api-form >>> .el-textarea__inner::placeholder {
-  color: #9ca3af !important;
-}
-.api-form :deep(.monospace-input),
-.api-form >>> .monospace-input {
-  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace !important;
-  letter-spacing: -0.2px !important;
-}
-.api-form :deep(.method-option),
-.api-form >>> .method-option {
-  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace !important;
-  font-size: 12px !important;
-  height: 32px !important;
-  line-height: 32px !important;
-}
 .app-container {
   min-height: 100vh;
   display: flex;
@@ -481,15 +633,6 @@ const openGroupForm = () => {
   overflow: hidden;
   position: relative;
   transition: all 0.3s ease-in-out;
-}
-
-@media (max-width: 768px) {
-  .app-container {
-    padding: 10px;
-  }
-  .main-content {
-    border-radius: 4px;
-  }
 }
 
 .content-wrapper {
@@ -543,6 +686,10 @@ const openGroupForm = () => {
 }
 
 @media (max-width: 768px) {
+  .app-container {
+    padding: 10px;
+  }
+  
   .header-section {
     flex-direction: column;
     align-items: stretch;
@@ -552,6 +699,10 @@ const openGroupForm = () => {
       width: 100%;
       justify-content: space-between;
     }
+  }
+
+  .debug-param-card {
+    overflow-x: auto;
   }
 }
 
@@ -745,8 +896,9 @@ const openGroupForm = () => {
 /* 表单样式 */
 .api-form {
   .form-content {
-    background: #ffffff;
-    padding: 20px;
+    max-height: 60vh;
+    overflow-y: auto;
+    padding-right: 10px;
 
     :deep(.el-form-item) {
       margin-bottom: 20px;
@@ -916,6 +1068,7 @@ const openGroupForm = () => {
     
     .el-dialog__body {
       padding: 0;
+      padding-top: 10px;
     }
     
     .el-dialog__footer {
@@ -1038,5 +1191,173 @@ const openGroupForm = () => {
   & + .el-button {
     margin-left: 8px;
   }
+}
+
+.debug-dialog {
+  :deep(.el-dialog) {
+    --el-dialog-padding-primary: 20px;
+    border-radius: 8px;
+    max-width: calc(100vw - 32px);
+    margin: 16px auto;
+  }
+  
+  :deep(.el-dialog__header) {
+    margin: 0;
+    padding: 20px;
+    border-bottom: 1px solid var(--el-border-color-lighter);
+  }
+  
+  :deep(.el-dialog__body) {
+    padding: 20px;
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+  }
+}
+
+.param-type-selector {
+  margin-bottom: 16px;
+  
+  :deep(.el-radio) {
+    margin-right: 24px;
+    
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+}
+
+.param-table {
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 4px;
+  background-color: var(--el-bg-color);
+}
+
+.param-table-header {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  background-color: var(--el-fill-color-light);
+  border-bottom: 1px solid var(--el-border-color-lighter);
+}
+
+.param-table-body {
+  padding: 8px 16px;
+}
+
+.param-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  gap: 8px;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.param-col {
+  font-size: 14px;
+  color: var(--el-text-color-regular);
+  
+  &.param-name { width: 160px; }
+  &.param-value { width: 200px; }
+  &.param-type { width: 120px; }
+  &.param-desc { flex: 1; min-width: 120px; }
+  &.param-action { width: 50px; text-align: center; }
+}
+
+.param-add-btn {
+  padding: 16px;
+  text-align: center;
+  border-top: 1px solid var(--el-border-color-lighter);
+}
+
+/* 响应式布局 */
+@media screen and (max-width: 768px) {
+  .param-row {
+    flex-wrap: wrap;
+    
+    .param-name,
+    .param-value,
+    .param-type,
+    .param-desc {
+      width: 100%;
+    }
+    
+    .param-action {
+      width: 100%;
+      text-align: right;
+      margin-top: 8px;
+    }
+  }
+  
+  .response-header {
+    flex-direction: column;
+    
+    .view-options,
+    .response-status {
+      width: 100%;
+      margin-bottom: 8px;
+    }
+  }
+}
+
+/* 保留之前的响应面板相关样式 */
+.response-panel {
+  border: none;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.response-header {
+  background: none;
+  border-bottom: 1px solid #e4e7ed;
+  padding: 0 0 8px 0;
+}
+
+.response-content {
+  min-height: 120px;
+  background: none;
+  padding: 0;
+  width: 100%;
+}
+
+.response-view {
+  width: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+.body-tab-content {
+  padding: 0;
+  display: flex;
+  align-items: center;
+  border-bottom: none;
+}
+
+.json-content, .raw-content {
+  background: none;
+  border: none;
+  box-shadow: none;
+  width: 100%;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #24292e;
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 0;
+  padding: 16px 0;
+}
+
+.empty-content {
+  color: #909399;
+  font-size: 14px;
+  padding: 40px 0;
+  text-align: left;
 }
 </style>

@@ -12,24 +12,35 @@
         <el-menu-item index="api" style="display: flex; justify-content: center;">
           <span>接口管理</span>
         </el-menu-item>
+        <el-menu-item index="env" style="display: flex; justify-content: center;">
+          <span>环境管理</span>
+        </el-menu-item>
       </el-menu>
     </el-aside>
 
     <!-- 主体内容：动态组件 -->
     <el-container style="height: 100vh; min-height: 100vh;">
       <el-main style="height: 100vh; min-height: 100vh; overflow: hidden;">
-        <component :is="activeMenu === 'group' ? ApiGroupForm : ApiInfoForm" />
+        <component :is="getActiveComponent" />
       </el-main>
     </el-container>
   </el-container>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import ApiGroupForm from './ApiGroupForm.vue'
 import ApiInfoForm from './ApiInfoForm.vue'
+import EnvironmentalManagement from './EnvironmentalManagement.vue'
 
 const activeMenu = ref('group')
+
+const getActiveComponent = computed(() => {
+  if (activeMenu.value === 'group') return ApiGroupForm
+  if (activeMenu.value === 'api') return ApiInfoForm
+  if (activeMenu.value === 'env') return EnvironmentalManagement
+  return ApiGroupForm
+})
 </script>
 
 <style scoped>

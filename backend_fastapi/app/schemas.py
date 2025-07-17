@@ -73,6 +73,7 @@ class ApiInfoCreate(BaseModel):
     url: str
     method: str
     group_id: Optional[int] = None
+    env_id: Optional[int] = None
     description: Optional[str] = None
 
 class ApiInfoOut(BaseModel):
@@ -92,6 +93,7 @@ class ApiInfoOut(BaseModel):
     url: str
     method: str
     group_id: Optional[int]
+    env_id: Optional[int]
     description: Optional[str]
     class Config:
         orm_mode = True

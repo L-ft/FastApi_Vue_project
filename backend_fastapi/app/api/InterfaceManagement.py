@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from ..db import get_db
 from ..models import ApiInfo
 from ..schemas import ApiInfoOut, ApiInfoCreate
+from ..models import EnvironmentVariable
 import logging
 
 router = APIRouter()
@@ -36,7 +37,12 @@ def create_api(api: ApiInfoCreate, db: Session = Depends(get_db)):
 @router.get("/info", response_model=list[ApiInfoOut])
 def list_apis(db: Session = Depends(get_db)):
     logger.info("Fetching all APIs")
-    return db.query(ApiInfo).all()
+    apis = db.query(ApiInfo).all()
+    # 关联环境名
+    envs = {e.id: e.name for e in db.query(EnvironmentVariable).all()}
+    for api in apis:
+        api.env_name = envs.get(api.env_id) if api.env_id else None
+    return apis
 
 # 修改接口
 @router.put("/info/{api_id}", response_model=ApiInfoOut)

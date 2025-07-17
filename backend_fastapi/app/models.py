@@ -53,6 +53,7 @@ class ApiInfo(Base):
     url = Column(String(255), nullable=False)
     method = Column(String(10), nullable=False)
     group_id = Column(Integer, ForeignKey("api_group.id"))
+    env_id = Column(Integer, ForeignKey("environment_variables.id"), nullable=True)
     description = Column(String(255))
 
 # ---------------- 环境变量模型 ----------------

@@ -3,3 +3,317 @@
 2025-07-16 16:56:34,329 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
 2025-07-16 16:56:37,599 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching environment variable with ID: 1
 2025-07-16 16:57:31,752 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-16 17:00:50,246 - python_multipart.multipart - DEBUG - Calling on_field_start with no data
+2025-07-16 17:00:50,247 - python_multipart.multipart - DEBUG - Calling on_field_name with data[0:8]
+2025-07-16 17:00:50,247 - python_multipart.multipart - DEBUG - Calling on_field_data with data[9:14]
+2025-07-16 17:00:50,247 - python_multipart.multipart - DEBUG - Calling on_field_end with no data
+2025-07-16 17:00:50,247 - python_multipart.multipart - DEBUG - Calling on_field_start with no data
+2025-07-16 17:00:50,247 - python_multipart.multipart - DEBUG - Calling on_field_name with data[15:23]
+2025-07-16 17:00:50,247 - python_multipart.multipart - DEBUG - Calling on_field_data with data[24:29]
+2025-07-16 17:00:50,247 - python_multipart.multipart - DEBUG - Calling on_field_end with no data
+2025-07-16 17:00:50,247 - python_multipart.multipart - DEBUG - Calling on_end with no data
+2025-07-16 17:00:50,264 - passlib.handlers.bcrypt - WARNING - (trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "D:\FastApi_project\FastAPIProject\.venv\Lib\site-packages\passlib\handlers\bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+              ^^^^^^^^^^^^^^^^^
+AttributeError: module 'bcrypt' has no attribute '__about__'
+2025-07-16 17:00:50,275 - passlib.handlers.bcrypt - DEBUG - detected 'bcrypt' backend, version '<unknown>'
+2025-07-16 17:00:50,275 - passlib.handlers.bcrypt - DEBUG - 'bcrypt' backend lacks $2$ support, enabling workaround
+2025-07-16 17:00:50,614 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-16 17:00:55,948 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-16 17:00:55,958 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs
+2025-07-16 17:00:56,251 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-16 17:01:39,094 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-16 17:01:39,105 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs
+2025-07-16 17:01:40,043 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-16 17:02:05,799 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-16 17:02:05,810 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs
+2025-07-16 17:02:06,265 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-16 17:58:19,755 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-16 17:58:22,345 - python_multipart.multipart - DEBUG - Calling on_field_start with no data
+2025-07-16 17:58:22,345 - python_multipart.multipart - DEBUG - Calling on_field_name with data[0:8]
+2025-07-16 17:58:22,345 - python_multipart.multipart - DEBUG - Calling on_field_data with data[9:14]
+2025-07-16 17:58:22,345 - python_multipart.multipart - DEBUG - Calling on_field_end with no data
+2025-07-16 17:58:22,345 - python_multipart.multipart - DEBUG - Calling on_field_start with no data
+2025-07-16 17:58:22,345 - python_multipart.multipart - DEBUG - Calling on_field_name with data[15:23]
+2025-07-16 17:58:22,345 - python_multipart.multipart - DEBUG - Calling on_field_data with data[24:29]
+2025-07-16 17:58:22,345 - python_multipart.multipart - DEBUG - Calling on_field_end with no data
+2025-07-16 17:58:22,345 - python_multipart.multipart - DEBUG - Calling on_end with no data
+2025-07-16 17:58:22,625 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-16 17:59:45,596 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-16 17:59:59,700 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-16 18:00:00,597 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-16 18:01:51,404 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 09:32:31,462 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 09:32:39,298 - python_multipart.multipart - DEBUG - Calling on_field_start with no data
+2025-07-17 09:32:39,298 - python_multipart.multipart - DEBUG - Calling on_field_name with data[0:8]
+2025-07-17 09:32:39,298 - python_multipart.multipart - DEBUG - Calling on_field_data with data[9:14]
+2025-07-17 09:32:39,298 - python_multipart.multipart - DEBUG - Calling on_field_end with no data
+2025-07-17 09:32:39,299 - python_multipart.multipart - DEBUG - Calling on_field_start with no data
+2025-07-17 09:32:39,299 - python_multipart.multipart - DEBUG - Calling on_field_name with data[15:23]
+2025-07-17 09:32:39,299 - python_multipart.multipart - DEBUG - Calling on_field_data with data[24:29]
+2025-07-17 09:32:39,299 - python_multipart.multipart - DEBUG - Calling on_field_end with no data
+2025-07-17 09:32:39,299 - python_multipart.multipart - DEBUG - Calling on_end with no data
+2025-07-17 09:32:39,846 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 09:32:47,482 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 09:32:51,254 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 10:06:56,586 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 10:07:13,750 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 10:07:16,373 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 10:07:16,387 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs
+2025-07-17 10:12:29,874 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 10:12:29,874 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 10:12:29,896 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs
+2025-07-17 10:13:19,897 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 10:13:20,348 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 10:13:20,348 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 10:13:20,361 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs
+2025-07-17 10:13:21,187 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 10:13:21,775 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 10:13:21,775 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 10:13:21,791 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs
+2025-07-17 10:14:50,872 - backend_fastapi.app.api.InterfaceManagement - INFO - Creating new API: ≤‚ ‘
+2025-07-17 10:17:00,338 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 10:17:02,555 - python_multipart.multipart - DEBUG - Calling on_field_start with no data
+2025-07-17 10:17:02,556 - python_multipart.multipart - DEBUG - Calling on_field_name with data[0:8]
+2025-07-17 10:17:02,556 - python_multipart.multipart - DEBUG - Calling on_field_data with data[9:14]
+2025-07-17 10:17:02,556 - python_multipart.multipart - DEBUG - Calling on_field_end with no data
+2025-07-17 10:17:02,556 - python_multipart.multipart - DEBUG - Calling on_field_start with no data
+2025-07-17 10:17:02,556 - python_multipart.multipart - DEBUG - Calling on_field_name with data[15:23]
+2025-07-17 10:17:02,556 - python_multipart.multipart - DEBUG - Calling on_field_data with data[24:29]
+2025-07-17 10:17:02,556 - python_multipart.multipart - DEBUG - Calling on_field_end with no data
+2025-07-17 10:17:02,556 - python_multipart.multipart - DEBUG - Calling on_end with no data
+2025-07-17 10:17:02,559 - passlib.handlers.bcrypt - WARNING - (trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "D:\FastApi_project\FastAPIProject\.venv\Lib\site-packages\passlib\handlers\bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+              ^^^^^^^^^^^^^^^^^
+AttributeError: module 'bcrypt' has no attribute '__about__'
+2025-07-17 10:17:02,574 - passlib.handlers.bcrypt - DEBUG - detected 'bcrypt' backend, version '<unknown>'
+2025-07-17 10:17:02,575 - passlib.handlers.bcrypt - DEBUG - 'bcrypt' backend lacks $2$ support, enabling workaround
+2025-07-17 10:17:02,992 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 10:17:06,738 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 10:17:07,281 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 10:17:07,281 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 10:17:07,294 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs
+2025-07-17 10:17:12,813 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs
+2025-07-17 10:17:16,048 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs
+2025-07-17 10:19:01,474 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 10:19:01,474 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 10:19:01,487 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs
+2025-07-17 10:19:22,107 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 10:19:23,337 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 10:19:23,842 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 10:19:23,842 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 10:19:23,855 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs
+2025-07-17 10:20:22,017 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 10:20:22,017 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 10:20:22,033 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs
+2025-07-17 10:22:34,607 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 10:22:35,840 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 10:22:36,397 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 10:22:36,400 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 10:22:36,415 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs
+2025-07-17 10:26:22,493 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 10:26:23,720 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 10:26:23,720 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 10:26:23,737 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs
+2025-07-17 10:27:08,573 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 10:27:11,443 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 10:27:12,704 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 10:27:12,704 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 10:27:12,718 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs
+2025-07-17 10:28:50,658 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 10:28:50,658 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 10:28:50,674 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs
+2025-07-17 10:31:37,809 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 10:31:37,809 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 10:31:37,827 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs
+2025-07-17 10:31:57,053 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 10:31:58,325 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 10:31:58,325 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 10:31:58,337 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs
+2025-07-17 10:33:06,131 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 10:33:06,131 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 10:33:06,147 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs
+2025-07-17 10:34:25,186 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 10:34:26,062 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 10:34:26,062 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 10:34:26,075 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs
+2025-07-17 10:35:17,680 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 10:35:19,086 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 10:35:19,086 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 10:35:19,100 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs
+2025-07-17 10:36:06,201 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 10:36:06,202 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 10:36:06,218 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs
+2025-07-17 10:36:21,810 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 10:36:23,125 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 10:36:23,125 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 10:36:23,141 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs
+2025-07-17 10:49:19,148 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 10:49:23,542 - python_multipart.multipart - DEBUG - Calling on_field_start with no data
+2025-07-17 10:49:23,542 - python_multipart.multipart - DEBUG - Calling on_field_name with data[0:8]
+2025-07-17 10:49:23,542 - python_multipart.multipart - DEBUG - Calling on_field_data with data[9:14]
+2025-07-17 10:49:23,542 - python_multipart.multipart - DEBUG - Calling on_field_end with no data
+2025-07-17 10:49:23,542 - python_multipart.multipart - DEBUG - Calling on_field_start with no data
+2025-07-17 10:49:23,542 - python_multipart.multipart - DEBUG - Calling on_field_name with data[15:23]
+2025-07-17 10:49:23,542 - python_multipart.multipart - DEBUG - Calling on_field_data with data[24:29]
+2025-07-17 10:49:23,542 - python_multipart.multipart - DEBUG - Calling on_field_end with no data
+2025-07-17 10:49:23,542 - python_multipart.multipart - DEBUG - Calling on_end with no data
+2025-07-17 10:49:24,111 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 10:49:27,664 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 10:49:27,664 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 10:49:27,677 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs
+2025-07-17 10:49:52,238 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 10:49:52,238 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 10:49:52,254 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs
+2025-07-17 11:37:23,043 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 11:37:23,044 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 11:37:23,059 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs
+2025-07-17 11:37:58,046 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 11:38:00,739 - python_multipart.multipart - DEBUG - Calling on_field_start with no data
+2025-07-17 11:38:00,740 - python_multipart.multipart - DEBUG - Calling on_field_name with data[0:8]
+2025-07-17 11:38:00,740 - python_multipart.multipart - DEBUG - Calling on_field_data with data[9:14]
+2025-07-17 11:38:00,740 - python_multipart.multipart - DEBUG - Calling on_field_end with no data
+2025-07-17 11:38:00,740 - python_multipart.multipart - DEBUG - Calling on_field_start with no data
+2025-07-17 11:38:00,740 - python_multipart.multipart - DEBUG - Calling on_field_name with data[15:23]
+2025-07-17 11:38:00,740 - python_multipart.multipart - DEBUG - Calling on_field_data with data[24:29]
+2025-07-17 11:38:00,740 - python_multipart.multipart - DEBUG - Calling on_field_end with no data
+2025-07-17 11:38:00,740 - python_multipart.multipart - DEBUG - Calling on_end with no data
+2025-07-17 11:38:01,249 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 11:38:03,876 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 11:38:03,876 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 11:38:03,889 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs
+2025-07-17 11:40:52,151 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 11:40:52,151 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 11:40:52,168 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs
+2025-07-17 11:45:38,472 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 11:45:39,580 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 11:45:39,581 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 11:45:39,593 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs
+2025-07-17 11:47:44,015 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 11:47:44,015 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 11:47:44,030 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs
+2025-07-17 11:49:13,985 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 11:49:13,986 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 11:49:13,998 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs
+2025-07-17 11:51:43,253 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 11:51:44,762 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 11:51:44,762 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 11:51:44,780 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs
+2025-07-17 11:58:39,225 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 11:58:39,766 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 11:58:39,766 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 11:58:39,779 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs
+2025-07-17 11:59:41,511 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 11:59:41,512 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 11:59:41,526 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs
+2025-07-17 12:00:03,746 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 12:00:05,023 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 12:00:05,024 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 12:00:05,036 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs
+2025-07-17 14:02:06,836 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 14:02:10,729 - python_multipart.multipart - DEBUG - Calling on_field_start with no data
+2025-07-17 14:02:10,729 - python_multipart.multipart - DEBUG - Calling on_field_name with data[0:8]
+2025-07-17 14:02:10,729 - python_multipart.multipart - DEBUG - Calling on_field_data with data[9:14]
+2025-07-17 14:02:10,729 - python_multipart.multipart - DEBUG - Calling on_field_end with no data
+2025-07-17 14:02:10,729 - python_multipart.multipart - DEBUG - Calling on_field_start with no data
+2025-07-17 14:02:10,729 - python_multipart.multipart - DEBUG - Calling on_field_name with data[15:23]
+2025-07-17 14:02:10,729 - python_multipart.multipart - DEBUG - Calling on_field_data with data[24:29]
+2025-07-17 14:02:10,729 - python_multipart.multipart - DEBUG - Calling on_field_end with no data
+2025-07-17 14:02:10,729 - python_multipart.multipart - DEBUG - Calling on_end with no data
+2025-07-17 14:02:11,236 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 14:02:13,324 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 14:02:13,324 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 14:02:13,337 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs
+2025-07-17 14:06:00,773 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 14:06:02,173 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 14:06:02,173 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 14:06:02,189 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs
+2025-07-17 14:09:00,119 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 14:09:00,120 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 14:09:00,134 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs
+2025-07-17 14:10:01,846 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs
+2025-07-17 14:10:02,398 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs
+2025-07-17 14:10:02,581 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs
+2025-07-17 14:14:05,145 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 14:16:06,083 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 14:17:54,600 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 14:17:54,601 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 14:17:54,613 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs
+2025-07-17 14:18:51,167 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 14:18:59,937 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 14:19:02,468 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 14:19:03,524 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 14:19:09,943 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 14:19:37,404 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 14:20:56,671 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 14:21:22,991 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 14:21:24,097 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 14:21:27,150 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 14:21:27,150 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 14:21:27,161 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs
+2025-07-17 14:21:27,582 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 14:21:28,310 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 14:21:28,831 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 14:21:44,588 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 14:21:45,723 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 14:22:18,370 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 14:22:19,509 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 14:22:34,344 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 14:22:35,794 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 14:24:49,045 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 14:24:49,882 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 14:24:50,424 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 14:26:44,409 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 14:40:00,311 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 14:40:02,787 - python_multipart.multipart - DEBUG - Calling on_field_start with no data
+2025-07-17 14:40:02,787 - python_multipart.multipart - DEBUG - Calling on_field_name with data[0:8]
+2025-07-17 14:40:02,787 - python_multipart.multipart - DEBUG - Calling on_field_data with data[9:14]
+2025-07-17 14:40:02,787 - python_multipart.multipart - DEBUG - Calling on_field_end with no data
+2025-07-17 14:40:02,787 - python_multipart.multipart - DEBUG - Calling on_field_start with no data
+2025-07-17 14:40:02,787 - python_multipart.multipart - DEBUG - Calling on_field_name with data[15:23]
+2025-07-17 14:40:02,787 - python_multipart.multipart - DEBUG - Calling on_field_data with data[24:29]
+2025-07-17 14:40:02,788 - python_multipart.multipart - DEBUG - Calling on_field_end with no data
+2025-07-17 14:40:02,788 - python_multipart.multipart - DEBUG - Calling on_end with no data
+2025-07-17 14:40:03,287 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 14:40:04,634 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 14:41:48,034 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 14:41:49,571 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 14:44:33,603 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 14:44:35,696 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 14:45:30,630 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 14:45:31,376 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 14:45:32,257 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 14:46:10,828 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 14:47:24,871 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 14:47:43,117 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 14:47:43,899 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 14:49:31,287 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 14:49:56,454 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 14:49:57,389 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 14:52:48,459 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 14:52:49,134 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 14:52:49,312 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 14:52:49,494 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 14:52:49,717 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 14:52:49,878 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 14:52:50,458 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 14:52:53,332 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 14:52:53,332 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 14:52:53,344 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs
+2025-07-17 14:52:53,816 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 14:52:54,538 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 14:52:55,287 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 14:52:55,288 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 14:52:55,301 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs
+2025-07-17 14:52:55,691 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 14:57:40,426 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 14:57:52,634 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 14:58:16,870 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 14:58:22,699 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 15:00:15,040 - backend_fastapi.app.api.EnvironmentalManagement - INFO - Fetching all environment variables
+2025-07-17 15:00:15,040 - backend_fastapi.app.api.GroupManagement - INFO - Fetching all API groups
+2025-07-17 15:00:15,052 - backend_fastapi.app.api.InterfaceManagement - INFO - Fetching all APIs

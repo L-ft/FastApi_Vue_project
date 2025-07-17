@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import Login from '../components/Login.vue';
 import Register from '../components/Register.vue';
 import Home from '../components/Home.vue';
+// import EnvDetail from '../components/EnvDetail.vue';
 
 const routes = [
   {
@@ -23,7 +24,8 @@ const routes = [
     path: '/home',
     name: 'Home',
     component: Home
-  }
+  },
+  // 环境变量详情页面已移至环境管理-环境变量列表，不再单独路由
 ];
 
 const router = createRouter({
