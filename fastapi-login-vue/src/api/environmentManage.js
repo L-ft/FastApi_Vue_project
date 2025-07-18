@@ -21,3 +21,23 @@ export function updateEnvironment(env_id, data) {
 export function deleteEnvironment(env_id) {
   return axios.delete(`${base}/env-vars/${env_id}`)
 }
+
+// 获取环境变量列表
+export function getEnvironmentVariables() {
+  return axios.get(`${base}/env-variables`)
+}
+
+// 新增环境变量
+export function addEnvironmentVariable(data) {
+  return axios.post(`${base}/env-variables`, data)
+}
+
+// 更新环境变量
+export function updateEnvironmentVariable(var_id, data) {
+  return axios.put(`${base}/env-variables/${var_id}`, data)
+}
+
+// 删除环境变量
+export function deleteEnvironmentVariable(var_id) {
+  return axios.delete(`${base}/env-variables/${var_id}`)
+}

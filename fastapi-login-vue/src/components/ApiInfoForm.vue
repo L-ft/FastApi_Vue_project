@@ -20,6 +20,7 @@
           </div>
           <div class="right-section">
             <el-button type="primary" @click="openApiForm()">新增接口</el-button>
+            <el-button type="success" @click="openEnvVarForm()">新增变量</el-button>
           </div>
         </div>
         <div class="table-section" style="overflow-x:auto;">
@@ -281,6 +282,7 @@
           <!-- 发送请求按钮 -->
           <el-form-item>
             <el-button type="primary" @click="doDebugRequest">发送请求</el-button>
+            <el-button @click="saveDebugAsCase" style="margin-left: 10px;">保存用例</el-button>
           </el-form-item>
 
           <!-- 响应结果部分 -->
@@ -340,6 +342,54 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+const emit = defineEmits(['add-env-var'])
+
+import { addCase } from '../api/apiManage'
+import { ElMessage } from 'element-plus'
+
+// 保存调试内容为用例
+const saveDebugAsCase = async () => {
+  // 组装用例数据
+  // 组装 params
+  let params = undefined, headers = undefined, body = undefined;
+  if (debugParamType.value === 'params') {
+    params = {};
+    debugParamsList.value.forEach(item => {
+      if (item.key) params[item.key] = item.value;
+    });
+  } else if (debugParamType.value === 'json') {
+    try { body = debugJson.value ? JSON.parse(debugJson.value) : undefined; } catch { body = undefined; }
+  } else if (debugParamType.value === 'form') {
+    body = {};
+    debugForm.value.split('\n').filter(Boolean).forEach(line => {
+      const [k, v] = line.split('=');
+      body[k] = v;
+    });
+  }
+  // headers
+  try { headers = debugHeaders.value ? JSON.parse(debugHeaders.value) : undefined; } catch { headers = undefined; }
+
+  const caseData = {
+    name: debugApi.value?.name || debugUrl.value || '新用例',
+    description: debugApi.value?.description || '',
+    group_id: debugApi.value?.group_id || 1,
+    api_id: debugApi.value?.id || 1,
+    method: debugMethod.value,
+    request_url: debugUrl.value,
+    params,
+    headers,
+    body,
+    expected_status: 200,
+    expected_response: {},
+  }
+  try {
+    await addCase(caseData)
+    ElMessage.success('用例保存成功！')
+  } catch (e) {
+    ElMessage.error('用例保存失败')
+  }
+}
+// Import API functions
 import { getApiList, deleteApi, addApi, updateApi } from '../api/apiManage'
 import { getApiGroups } from '../api/apiManage'
 import { getEnvironments } from '../api/environmentManage'
@@ -487,6 +537,11 @@ onUnmounted(() => {
 const openGroupForm = () => {
   // 触发新增分组事件，您可以根据需要修改实现
   console.log('Open group form')
+}
+
+const openEnvVarForm = () => {
+  // 发出事件，让父组件处理环境变量的添加
+  emit('add-env-var')
 }
 
 // 调试相关

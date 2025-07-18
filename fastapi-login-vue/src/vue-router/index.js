@@ -5,6 +5,7 @@ import Register from '../components/Register.vue';
 import Home from '../components/Home.vue';
 // import EnvDetail from '../components/EnvDetail.vue';
 
+import CaseDetail from '../components/CaseDetail.vue';
 const routes = [
   {
     path: '/',
@@ -25,6 +26,11 @@ const routes = [
     name: 'Home',
     component: Home
   },
+  {
+    path: '/case-detail/:id',
+    name: 'CaseDetail',
+    component: CaseDetail
+  }
   // 环境变量详情页面已移至环境管理-环境变量列表，不再单独路由
 ];
 

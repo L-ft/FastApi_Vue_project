@@ -21,6 +21,33 @@ export function delete_group(group_id) {
   return axios.delete(`/api/group/${group_id}`)
 }
 
+// 用例管理相关接口
+export function getCases() {
+  return axios.get('/api/case_info')
+}
+
+export function addCase(data) {
+  return axios.post('/api/case_info', data)
+}
+
+export function updateCase(data) {
+  return axios.put(`/api/case_info/${data.id}`, data)
+}
+
+export function deleteCaseById(id) {
+  return axios.delete(`/api/case_info/${id}`)
+}
+
+// 获取分组列表
+export function getGroups() {
+  return axios.get('/api/group')
+}
+
+// 获取API列表
+export function getApis() {
+  return axios.get('/api/info')
+}
+
 // 获取接口列表
 export function getApiList() {
   return axios.get(`${base}/info`)

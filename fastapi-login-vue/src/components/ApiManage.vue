@@ -15,13 +15,16 @@
         <el-menu-item index="env" style="display: flex; justify-content: center;">
           <span>环境管理</span>
         </el-menu-item>
+        <el-menu-item index="case" style="display: flex; justify-content: center;">
+          <span>用例管理</span>
+        </el-menu-item>
       </el-menu>
     </el-aside>
 
     <!-- 主体内容：动态组件 -->
     <el-container style="height: 100vh; min-height: 100vh;">
       <el-main style="height: 100vh; min-height: 100vh; overflow: hidden;">
-        <component :is="getActiveComponent" />
+        <component :is="getActiveComponent" @add-env-var="handleAddEnvVar" />
       </el-main>
     </el-container>
   </el-container>
@@ -32,6 +35,7 @@ import { ref, computed } from 'vue'
 import ApiGroupForm from './ApiGroupForm.vue'
 import ApiInfoForm from './ApiInfoForm.vue'
 import EnvironmentalManagement from './EnvironmentalManagement.vue'
+import CaseManagement from './CaseManagement.vue'
 
 const activeMenu = ref('group')
 
@@ -39,8 +43,27 @@ const getActiveComponent = computed(() => {
   if (activeMenu.value === 'group') return ApiGroupForm
   if (activeMenu.value === 'api') return ApiInfoForm
   if (activeMenu.value === 'env') return EnvironmentalManagement
+  if (activeMenu.value === 'case') return CaseManagement
   return ApiGroupForm
 })
+
+// 处理添加环境变量的事件
+const handleAddEnvVar = () => {
+  // 切换到环境管理页面
+  activeMenu.value = 'env'
+  // 给环境管理组件一点时间加载
+  setTimeout(() => {
+    // 获取环境管理组件的实例
+    const envComponent = document.querySelector('.main-content')
+    if (envComponent) {
+      // 触发新增变量的动作
+      const addVarButton = envComponent.querySelector('.env-search-right button')
+      if (addVarButton) {
+        addVarButton.click()
+      }
+    }
+  }, 100)
+}
 </script>
 
 <style scoped>

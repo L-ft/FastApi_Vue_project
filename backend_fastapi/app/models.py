@@ -17,6 +17,47 @@ class UserDB(Base):
     username = Column(String(50), unique=True, index=True, nullable=False)
     password = Column(String(100), nullable=False)
 
+# ---------------- 环境管理模型 ----------------
+class Environment(Base):
+    """
+    环境配置表，用于存储不同环境的配置信息
+    
+    属性:
+        id (int): 主键
+        name (str): 环境名称
+        value (str): 环境地址
+        description (str): 环境描述
+        created_at (datetime): 创建时间
+        updated_at (datetime): 更新时间
+    """
+    __tablename__ = "environments"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(50), nullable=False)
+    value = Column(String(500), nullable=False)
+    description = Column(String(200), nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+# ---------------- 环境变量模型 ----------------
+# EnvironmentVariable 类表示数据库中的环境变量表
+# 属性:
+#   id(int): 环境变量唯一标识，主键，自动递增
+#   env_id(int): 关联的环境ID，外键
+#   key(str): 变量名，最大长度50，不可为空
+#   value(str): 变量值，不可为空
+#   created_at(datetime): 创建时间
+#   updated_at(datetime): 更新时间
+class EnvironmentVariable(Base):
+    __tablename__ = "environment_variables"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    env_id = Column(Integer, ForeignKey("environments.id", ondelete="CASCADE"), nullable=False)
+    key = Column(String(50), nullable=False)
+    value = Column(String(500), nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
 # 创建所有表（如果不存在）
 # 参数:
 #   bind(engine): 数据库引擎，用于连接数据库并执行创建表操作
@@ -48,6 +89,7 @@ class ApiInfo(Base):
         method (str): 请求方法，10字符内，非空
         group_id (int): 所属分组ID，关联api_group.id
         description (str): 描述信息，255字符内
+        env_id (int): 关联的环境ID
     """
 
     __tablename__ = "api_info"
@@ -56,24 +98,8 @@ class ApiInfo(Base):
     url = Column(String(255), nullable=False)
     method = Column(String(10), nullable=False)
     group_id = Column(Integer, ForeignKey("api_group.id"))
-    env_id = Column(Integer, ForeignKey("environment_variables.id"), nullable=True)
-    description = Column(String(255))
-
-# ---------------- 环境变量模型 ----------------
-class EnvironmentVariable(Base):
-    """
-    环境变量模型
-
-    Attributes:
-        id (int): 环境变量唯一标识
-        name (str): 环境变量名称，100字符内，非空且唯一
-        value (str): 环境变量值，255字符内，非空
-    """
-
-    __tablename__ = "environment_variables"
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(100), unique=True, nullable=False)
-    value = Column(String(255), nullable=False)
+    env_id = Column(Integer, ForeignKey("environments.id"), nullable=True)
+    description = Column(String(255), nullable=True)
 
 # ---------------- 用例管理模型 ----------------
 class CaseInfo(Base):

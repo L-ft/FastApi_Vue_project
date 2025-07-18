@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
+from datetime import datetime
 
 
 # ---------------- 认证Pydantic ----------------
@@ -101,32 +102,27 @@ class ApiInfoOut(BaseModel):
 
 # ---------------- 环境变量管理 ----------------
 
-class EnvironmentVariableCreate(BaseModel):
-    """
-    环境变量创建模型
-
-    属性:
-        name (str): 环境变量名称
-        value (str): 环境变量值
-    """
-    name: str
+# ---------------- 环境变量Pydantic ----------------
+class EnvironmentVariableBase(BaseModel):
+    """环境变量的基础模型"""
+    env_id: int
+    key: str
     value: str
 
+class EnvironmentVariableCreate(EnvironmentVariableBase):
+    """用于创建环境变量的请求模型"""
+    pass
 
-class EnvironmentVariable(EnvironmentVariableCreate):
-    """
-    环境变量数据库模型
+class EnvironmentVariableUpdate(BaseModel):
+    """用于更新环境变量的请求模型"""
+    key: Optional[str] = None
+    value: Optional[str] = None
 
-    属性:
-        id (Optional[int]): 主键ID（可选）
-        name (str): 继承自父类的环境变量名称
-        value (str): 继承自父类的环境变量值
-
-    嵌套类:
-        Config: ORM配置类
-            orm_mode (bool): 启用ORM模式
-    """
-    id: Optional[int] = None
+class EnvironmentVariable(EnvironmentVariableBase):
+    """环境变量的响应模型"""
+    id: int
+    created_at: datetime
+    updated_at: datetime
 
     class Config:
         orm_mode = True
