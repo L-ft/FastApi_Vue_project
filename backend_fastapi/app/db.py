@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-SQLALCHEMY_DATABASE_URL = "mysql+pymysql://root:1011%40@localhost/autotest"
+SQLALCHEMY_DATABASE_URL = "mysql+pymysql://root:Lft1011%40@localhost/autotest"
 # 数据库引擎对象，用于管理数据库连接
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 # 创建会话工厂，用于生成数据库会话实例
