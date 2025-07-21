@@ -11,7 +11,7 @@ router = APIRouter()
 logger = logging.getLogger(__name__)
 
 # API分组
-@router.post("/group", response_model=ApiGroupOut)
+@router.post("/groups", response_model=ApiGroupOut)
 def create_group(group: ApiGroupCreate, db: Session = Depends(get_db)):
     """
     创建一个新的API组
@@ -31,18 +31,17 @@ def create_group(group: ApiGroupCreate, db: Session = Depends(get_db)):
     logger.info(f"Created API group with ID: {db_group.id}")
     return db_group  # 返回创建的组对象
 
-@router.get("/group", response_model=list[ApiGroupOut])
-# 获取所有API分组信息
-# 参数:
-#   db: 数据库会话对象，默认通过get_db获取
-# 返回:
-#   ApiGroup对象列表
+
+@router.get("/groups", response_model=list[ApiGroupOut])
 def list_groups(db: Session = Depends(get_db)):
     logger.info("Fetching all API groups")
-    return db.query(ApiGroup).all()
+    groups = db.query(ApiGroup).all()
+    result = [ApiGroupOut(id=g.id, name=g.name) for g in groups]
+    logger.info(f"Successfully fetched {len(result)} groups")
+    return result
 
 # 添加更新和删除API分组的路由
-@router.put("/group/{group_id}", response_model=ApiGroupOut)
+@router.put("/groups/{group_id}", response_model=ApiGroupOut)
 def update_group(group_id: int, group: ApiGroupUpdate, db: Session = Depends(get_db)):
     """
     更新指定ID的API分组信息
@@ -64,7 +63,7 @@ def update_group(group_id: int, group: ApiGroupUpdate, db: Session = Depends(get
     db.refresh(db_group)
     return db_group
 
-@router.delete("/group/{group_id}")
+@router.delete("/groups/{group_id}")
 def delete_group(group_id: int, db: Session = Depends(get_db)):
     """
     删除指定ID的API分组

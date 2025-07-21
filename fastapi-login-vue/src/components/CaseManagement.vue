@@ -1,11 +1,60 @@
 <style scoped>
 .app-container {
   min-height: 100vh;
-  display: flex;
   width: 100%;
   background-color: #f5f7fa;
-  padding: 16px;
-  gap: 16px;
+}
+
+.content-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.search-section {
+  display: flex;
+  gap: 12px;
+}
+
+.group-select {
+  width: 200px;
+}
+
+.search-input {
+  width: 240px;
+}
+
+.table-wrapper {
+  background: #fff;
+  border-radius: 4px;
+  padding: 20px;
+}
+
+.case-name-link {
+  text-decoration: none;
+}
+
+.api-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.api-name {
+  font-size: 13px;
+  color: #606266;
+}
+
+.no-api {
+  color: #909399;
+  font-size: 13px;
+}
+
+.pagination-container {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
 }
 .main-content {
   flex: 1;
@@ -16,6 +65,8 @@
   overflow: hidden;
   position: relative;
   transition: all 0.3s ease-in-out;
+  width: 100%;
+  max-width: 100%;
 }
 .content-wrapper {
   background: #f8fafc;
@@ -25,13 +76,13 @@
 }
 .header-section {
   background: #fff;
-  padding: 20px;
+  padding: clamp(12px, 3vw, 20px);
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 16px;
-  margin: 0 0 24px 0;
+  gap: clamp(10px, 2vw, 16px);
+  margin: 0 0 clamp(16px, 3vw, 24px) 0;
   position: relative;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05),
@@ -39,6 +90,7 @@
   background: linear-gradient(to bottom, #ffffff, #fafafa);
   border: 1px solid rgba(0, 0, 0, 0.05);
 }
+
 .header-section::before {
   content: '';
   position: absolute;
@@ -51,42 +103,94 @@
     rgba(255,255,255,0.8) 50%,
     rgba(255,255,255,0) 100%);
 }
+
 .left-section {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: clamp(8px, 1.5vw, 10px);
+  flex: 1;
+  min-width: 0;
 }
+
 .right-section {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: clamp(8px, 1.5vw, 10px);
 }
-@media (max-width: 768px) {
-  .app-container {
-    padding: 10px;
-  }
+
+@media (max-width: 992px) {
   .header-section {
     flex-direction: column;
     align-items: stretch;
-    .left-section,
-    .right-section {
-      width: 100%;
-      justify-content: space-between;
-    }
+  }
+
+  .left-section {
+    width: 100%;
+  }
+
+  .right-section {
+    width: 100%;
+    justify-content: flex-end;
+    margin-top: 10px;
+  }
+
+  .search-section {
+    flex-wrap: wrap;
+  }
+
+  .el-select,
+  .el-input {
+    flex: 1;
+    min-width: 150px;
+  }
+}
+
+@media (max-width: 576px) {
+  .app-container {
+    padding: 8px;
+  }
+
+  .header-section {
+    padding: 12px;
+  }
+
+  .left-section,
+  .right-section {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .el-select,
+  .el-input,
+  .el-button {
+    width: 100% !important;
+  }
+
+  .right-section {
+    margin-top: 8px;
   }
 }
 .table-section {
   background: #ffffff;
   margin: 0;
-  padding: 20px;
-  overflow-x: auto;
+  padding: clamp(12px, 3vw, 20px);
   position: relative;
   border-radius: 8px;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
               0 2px 4px -1px rgba(0, 0, 0, 0.06);
   border: 1px solid rgba(0, 0, 0, 0.05);
+  width: 100%;
 }
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 0 -8px;
+  padding: 0 8px;
+}
+
 .table-section::before {
   content: '';
   position: absolute;
@@ -94,10 +198,46 @@
   left: 20px;
   right: 20px;
   height: 1px;
-/* 样式区域仅保留CSS，无JS代码 */
-  :deep(.el-table__inner-wrapper) {
+}
+
+:deep(.el-table) {
+  width: 100% !important;
+  
+  .el-table__inner-wrapper {
     background-color: #fff;
     border: 1px solid #f0f0f0;
+  }
+
+  .el-table__header-wrapper {
+    th {
+      background-color: #fafafa;
+      font-weight: 500;
+      color: #1f2937;
+      font-size: 13px;
+      padding: 8px 12px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+  }
+
+  .el-table__body-wrapper {
+    td {
+      padding: 8px 12px;
+      font-size: 13px;
+      color: #374151;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .el-table__header-wrapper th,
+    .el-table__body-wrapper td {
+      padding: 6px 8px;
+      font-size: 12px;
+    }
+
+    .el-button {
+      padding: 6px 10px;
+      font-size: 12px;
+    }
   }
 }
 .el-table__row {
@@ -302,748 +442,521 @@
     }
   }
 }
-
-/* 运行结果对话框样式 */
-.error-response {
-  color: #f56c6c !important;
-}
-
-:deep(.el-dialog__body) {
-  padding: 20px;
-}
-
-:deep(.dialog-footer) {
+.search-section {
   display: flex;
-  justify-content: flex-end;
+  gap: clamp(8px, 1.5vw, 12px);
+  align-items: center;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.search-select {
+  min-width: 150px;
+  max-width: 180px;
+  flex: 1;
+}
+
+.search-input {
+  min-width: 200px;
+  max-width: 300px;
+  flex: 2;
+}
+
+.search-button {
+  white-space: nowrap;
+}
+
+.case-detail-dialog {
+  :deep(.el-dialog) {
+    max-width: 95vw;
+    margin: 2.5vh auto !important;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+}
+
+.detail-card {
+  :deep(.el-card__body) {
+    padding: clamp(12px, 2vw, 20px);
+  }
+}
+
+.detail-header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
   gap: 12px;
+  margin-bottom: clamp(12px, 3vw, 20px);
 }
 
-/* 提取变量对话框样式 */
-:deep(.el-form-item__content) {
-  flex-direction: column;
-  align-items: stretch;
+.detail-title {
+  font-size: clamp(16px, 2vw, 18px);
+  font-weight: 600;
+  color: #1f2937;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-:deep(.el-textarea__inner) {
-  font-family: 'Courier New', monospace;
+.detail-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.request-info {
+  margin-bottom: 16px;
+  padding: 12px;
+  background: #f9fafb;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+}
+
+.request-method {
+  font-family: monospace;
+  color: #1f2937;
+  margin-bottom: 8px;
+}
+
+.request-meta {
+  display: flex;
+  gap: 16px;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.success-status {
+  color: #22c55e;
+}
+
+.body-textarea,
+.response-textarea {
+  :deep(.el-textarea__inner) {
+    font-family: monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    background: #f9fafb;
+    border-color: #e5e7eb;
+  }
+}
+
+.case-name-link {
+  text-decoration: none;
+}
+
+.api-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.api-name {
+  font-size: 13px;
+  color: #606266;
+}
+
+.no-api {
+  color: #909399;
+  font-size: 13px;
+}
+
+.group-tag {
+  margin: 0;
+}
+
+@media (max-width: 992px) {
+  .header-section {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-section {
+    flex-wrap: wrap;
+  }
+
+  .search-select,
+  .search-input {
+    min-width: 0;
+    max-width: none;
+  }
+
+  .right-section {
+    justify-content: flex-end;
+    margin-top: 8px;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-container {
+    padding: 8px;
+  }
+
+  .content-wrapper {
+    padding: 12px;
+  }
+
+  .header-section {
+    padding: 12px;
+    margin-bottom: 16px;
+  }
+
+  .search-section,
+  .detail-header {
+    flex-direction: column;
+  }
+
+  .search-select,
+  .search-input,
+  .el-button {
+    width: 100% !important;
+  }
+
+  .detail-actions {
+    width: 100%;
+    justify-content: center;
+  }
+
+  :deep(.el-table) {
+    .el-table__header-wrapper th,
+    .el-table__body-wrapper td {
+      padding: 6px 8px;
+      font-size: 12px;
+    }
+
+    .el-button {
+      padding: 6px 10px;
+      font-size: 12px;
+    }
+  }
 }
 </style>
 <template>
-  <el-container class="app-container">
-    <el-main class="main-content">
-      <div class="content-wrapper">
-        <div class="header-section">
+  <div class="app-container">
+    <el-container>
+      <el-main>
+        <div class="content-header">
           <div class="left-section">
-            <el-select v-model="selectedGroup" placeholder="选择分组" style="width: 180px" @change="fetchCases">
-              <el-option label="全部分组" :value="null" />
-              <el-option v-for="g in groupList" :key="g.id" :label="g.name" :value="g.id" />
-            </el-select>
-            <el-input
-              v-model="search"
-              placeholder="搜索用例名称"
-              style="width: 220px; margin-left: 10px"
-              clearable
-              @keyup.enter="handleSearch"
-            />
-            <el-button type="primary" style="margin-left: 10px;" @click="handleSearch">查询</el-button>
+            <div class="search-section">
+              <el-select v-model="selectedGroup" placeholder="选择分组" clearable class="group-select">
+                <el-option v-for="g in groupList" :key="g.id" :label="g.name" :value="g.id" />
+              </el-select>
+              <el-input
+                v-model="search"
+                placeholder="搜索用例名称"
+                class="search-input"
+                clearable
+                @keyup.enter="handleSearch"
+              >
+                <template #prefix>
+                  <el-icon><Search /></el-icon>
+                </template>
+              </el-input>
+              <el-button type="primary" class="search-button" @click="handleSearch">
+                <el-icon><Search /></el-icon>
+                <span>查询</span>
+              </el-button>
+            </div>
           </div>
           <div class="right-section">
-            <el-button type="primary" @click="openCaseForm()">新增用例</el-button>
+            <el-button type="primary" @click="openCaseForm()">
+              <el-icon><Plus /></el-icon>
+              新增用例
+            </el-button>
           </div>
         </div>
-        <div class="table-section" style="overflow-x:auto;">
-          <el-table :data="pagedCaseList" :border="false" style="min-width: 900px; width: auto; table-layout: auto;">
-            <el-table-column prop="name" label="用例名称" min-width="120">
-              <template #default="scope">
-                <el-link type="primary" @click="goDetail(scope.row)">{{ scope.row.name }}</el-link>
-              </template>
-            </el-table-column>
-            <el-table-column prop="description" label="描述" min-width="180" />
-            <el-table-column prop="group_id" label="所属分组" min-width="100">
-              <template #default="scope">{{ getGroupName(scope.row.group_id) }}</template>
-            </el-table-column>
-            <el-table-column prop="api_id" label="所属API" min-width="100">
-              <template #default="scope">{{ getApiName(scope.row.api_id) }}</template>
-            </el-table-column>
-            <el-table-column prop="method" label="请求方法" min-width="80" />
-            <el-table-column prop="request_url" label="请求地址" min-width="180" />
-            <el-table-column prop="creator" label="创建人" min-width="100" />
-            <el-table-column label="操作" min-width="180" fixed="right">
-              <template #default="scope">
-                <el-button size="mini" @click="editCase(scope.row)">编辑</el-button>
-                <el-button size="mini" type="danger" @click="deleteCase(scope.row.id)">删除</el-button>
-                <el-button size="mini" type="success" @click="runCase(scope.row)">运行</el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-          <div class="pagination-container">
-            <el-pagination
-              v-model:current-page="casePage"
-              :page-size="casePageSize"
-              :total="caseList.length"
-              layout="prev, pager, next"
-              :small="isSmallScreen"
-            />
-          </div>
-        </div>
-      </div>
-      <!-- 添加/编辑用例对话框 -->
-      <el-dialog 
-        v-model="caseDialogVisible" 
-        :title="editMode ? '编辑用例' : '新增用例'" 
-        width="500px" 
-        :close-on-click-modal="false"
-        class="api-dialog"
-        destroy-on-close>
-        <el-form 
-          :model="form" 
-          label-position="top" 
-          class="api-form"
-          :validate-on-rule-change="false">
-          <div class="form-content">
-            <el-form-item label="用例名称" required prop="name">
-              <el-input v-model="form.name" placeholder="例如：登录用例" />
-            </el-form-item>
-            <el-form-item label="描述" prop="description">
-              <el-input v-model="form.description" type="textarea" :rows="2" placeholder="用例描述" resize="none" />
-            </el-form-item>
-            <el-row :gutter="16">
-              <el-col :span="12">
-                <el-form-item label="所属分组" required prop="group_id">
-                  <el-select v-model="form.group_id" placeholder="选择分组" class="full-width">
-                    <el-option v-for="g in groupList" :key="g.id" :label="g.name" :value="g.id" />
-                  </el-select>
-                </el-form-item>
-              </el-col>
-              <el-col :span="12">
-                <el-form-item label="所属API" required prop="api_id">
-                  <el-select v-model="form.api_id" placeholder="选择API" class="full-width">
-                    <el-option v-for="a in apiList" :key="a.id" :label="a.name" :value="a.id" />
-                  </el-select>
-                </el-form-item>
-              </el-col>
-            </el-row>
-            <el-row :gutter="16">
-              <el-col :span="12">
-                <el-form-item label="请求方法" prop="method">
-                  <el-select v-model="form.method" placeholder="选择方法" class="full-width">
-                    <el-option label="GET" value="GET" />
-                    <el-option label="POST" value="POST" />
-                    <el-option label="PUT" value="PUT" />
-                    <el-option label="DELETE" value="DELETE" />
-                  </el-select>
-                </el-form-item>
-              </el-col>
-              <el-col :span="12">
-                <el-form-item label="请求地址" prop="request_url">
-                  <el-input v-model="form.request_url" placeholder="/api/v1/login" />
-                </el-form-item>
-              </el-col>
-            </el-row>
-            <el-form-item label="创建人" prop="creator">
-              <el-input v-model="form.creator" placeholder="创建人" />
-            </el-form-item>
-          </div>
-        </el-form>
-        <template #footer>
-          <div class="dialog-footer">
-            <el-button @click="caseDialogVisible = false">取 消</el-button>
-            <el-button type="primary" @click="saveCase">确 定</el-button>
-          </div>
-        </template>
-      </el-dialog>
-    </el-main>
-  </el-container>
-  <el-dialog v-model="caseDetailVisible" title="用例详情" width="1000px" :close-on-click-modal="false">
-  <el-card class="detail-card">
-    <div>
-      <div class="detail-header">
-        <span class="detail-title">H5获取token（成功）</span>
-        <el-button type="primary" style="float:right">发送</el-button>
-        <el-button style="float:right; margin-right:10px">保存</el-button>
-        <el-button style="float:right; margin-right:10px">删除</el-button>
-      </div>
-      <el-tabs v-model="activeTab" class="detail-tabs">
-        <el-tab-pane label="Params" name="params">
-          <el-table :data="params" style="width:100%">
-            <el-table-column prop="name" label="参数名"></el-table-column>
-            <el-table-column prop="value" label="参数值"></el-table-column>
-            <el-table-column prop="type" label="类型"></el-table-column>
-            <el-table-column prop="desc" label="说明"></el-table-column>
-          </el-table>
-        </el-tab-pane>
-        <el-tab-pane label="Body" name="body">
-          <div>
-            <el-input type="textarea" :rows="10" v-model="body"></el-input>
-          </div>
-        </el-tab-pane>
-        <el-tab-pane label="Header" name="header">
-          <el-table :data="headers" style="width:100%">
-            <el-table-column prop="name" label="名称"></el-table-column>
-            <el-table-column prop="value" label="值"></el-table-column>
-          </el-table>
-        </el-tab-pane>
-        <el-tab-pane label="实际请求" name="request">
-          <div>
-            <div class="request-info">
-              <div>POST {{ url }}</div>
-              <div>耗时：{{ responseTime }} ms</div>
-              <div>状态：<span style="color:green">成功 ({{ statusCode }})</span></div>
+        
+        <div class="table-section">
+          <div class="table-wrapper">
+            <el-table 
+              :data="pagedCaseList" 
+              :border="false" 
+              style="min-width: 900px"
+              v-loading="loading"
+            >
+              <el-table-column prop="name" label="用例名称" min-width="120">
+                <template #default="scope">
+                  <el-link type="primary" @click="handleViewDetail(scope.row)" class="case-name-link">
+                    {{ scope.row.name }}
+                  </el-link>
+                </template>
+              </el-table-column>
+              <el-table-column prop="description" label="描述" min-width="180" show-overflow-tooltip />
+              <el-table-column label="所属分组" min-width="120">
+                <template #default="scope">
+                  <el-tag size="small" effect="plain">
+                    {{ getGroupName(scope.row.group_id) }}
+                  </el-tag>
+                </template>
+              </el-table-column>
+              <el-table-column label="所属API" min-width="180">
+                <template #default="scope">
+                  <el-tooltip 
+                    v-if="getApiInfo(scope.row.api_id)"
+                    :content="getApiInfo(scope.row.api_id).url"
+                    placement="top"
+                  >
+                    <div class="api-info">
+                      <el-tag 
+                        size="small" 
+                        :type="getApiInfo(scope.row.api_id).method === 'GET' ? 'success' : 
+                               getApiInfo(scope.row.api_id).method === 'POST' ? 'warning' :
+                               getApiInfo(scope.row.api_id).method === 'PUT' ? 'info' : 'danger'"
+                      >
+                        {{ getApiInfo(scope.row.api_id).method }}
+                      </el-tag>
+                      <span class="api-name">{{ getApiInfo(scope.row.api_id).name }}</span>
+                    </div>
+                  </el-tooltip>
+                  <span v-else class="no-api">-</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="操作" width="200" fixed="right">
+                <template #default="scope">
+                  <el-button-group>
+                    <el-button size="small" type="primary" plain @click="handleEdit(scope.row)">
+                      <el-icon><Edit /></el-icon>
+                    </el-button>
+                    <el-button size="small" type="danger" plain @click="handleDelete(scope.row)">
+                      <el-icon><Delete /></el-icon>
+                    </el-button>
+                    <el-button size="small" type="success" plain @click="handleRun(scope.row)">
+                      <el-icon><VideoPlay /></el-icon>
+                    </el-button>
+                  </el-button-group>
+                </template>
+              </el-table-column>
+            </el-table>
+            
+            <!-- 分页 -->
+            <div class="pagination-container">
+              <el-pagination
+                v-model:currentPage="currentPage"
+                v-model:pageSize="pageSize"
+                :page-sizes="[10, 20, 50, 100]"
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="total"
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+              />
             </div>
-            <el-input type="textarea" :rows="10" v-model="response"></el-input>
           </div>
-        </el-tab-pane>
-      </el-tabs>
-    </div>
-  </el-card>
-</el-dialog>
-
-<!-- 运行结果对话框 -->
-<el-dialog 
-  v-model="runResultDialogVisible" 
-  :title="runResultData.isError ? '运行失败' : '运行结果'"
-  width="60%"
-  :close-on-click-modal="false"
->
-  <div style="text-align: left;">
-    <div style="margin-bottom: 16px;">
-      <strong>状态码:</strong> 
-      <span :style="{ color: runResultData.isError ? 'red' : 'green' }">
-        {{ runResultData.status }}
-      </span>
-    </div>
-    <div style="margin-bottom: 16px;">
-      <strong>耗时:</strong> {{ runResultData.time }}ms
-    </div>
-    <div style="margin-bottom: 16px;">
-      <strong>响应:</strong>
-    </div>
-    <el-input
-      type="textarea"
-      :rows="15"
-      v-model="runResultData.data"
-      readonly
-      style="font-family: monospace; white-space: pre-wrap;"
-      :class="{ 'error-response': runResultData.isError }"
-    />
+        </div>
+      </el-main>
+    </el-container>
   </div>
-  
-  <template #footer>
-    <span class="dialog-footer">
-      <el-button 
-        v-if="!runResultData.isError" 
-        type="primary" 
-        @click="extractVariable"
-      >
-        提取变量
-      </el-button>
-      <el-button @click="runResultDialogVisible = false">关闭</el-button>
-    </span>
-  </template>
-</el-dialog>
-
-<!-- 提取变量对话框 -->
-<el-dialog 
-  v-model="extractVarDialogVisible" 
-  title="提取变量"
-  width="50%"
-  :close-on-click-modal="false"
->
-  <el-form :model="extractVarForm" label-width="100px">
-    <el-form-item label="变量名" required>
-      <el-input 
-        v-model="extractVarForm.varName" 
-        placeholder="请输入变量名，如: access_token"
-      />
-    </el-form-item>
-    
-    <el-form-item label="所属环境" required>
-      <el-select 
-        v-model="extractVarForm.envId" 
-        placeholder="请选择环境"
-        style="width: 100%"
-      >
-        <el-option 
-          v-for="env in envList" 
-          :key="env.id" 
-          :label="env.name" 
-          :value="env.id" 
-        />
-      </el-select>
-    </el-form-item>
-    
-    <el-form-item label="JSON路径" required>
-      <el-input 
-        v-model="extractVarForm.jsonPath" 
-        placeholder="请输入JSON路径，如: $.data.accessToken 或 data.accessToken"
-        @input="parseJsonPath"
-      />
-      <div style="font-size: 12px; color: #909399; margin-top: 4px;">
-        支持JSONPath格式：$.data.token 或点号分隔：data.user.id
-      </div>
-      <div style="margin-top: 8px;">
-        <span style="font-size: 12px; color: #666;">常用路径：</span>
-        <el-button 
-          size="small" 
-          text 
-          type="primary" 
-          @click="extractVarForm.jsonPath = '$.data'; parseJsonPath()"
-        >
-          $.data
-        </el-button>
-        <el-button 
-          size="small" 
-          text 
-          type="primary" 
-          @click="extractVarForm.jsonPath = '$.data.accessToken'; parseJsonPath()"
-        >
-          $.data.accessToken
-        </el-button>
-        <el-button 
-          size="small" 
-          text 
-          type="primary" 
-          @click="extractVarForm.jsonPath = '$.data.token'; parseJsonPath()"
-        >
-          $.data.token
-        </el-button>
-      </div>
-    </el-form-item>
-    
-    <el-form-item label="提取的值">
-      <el-input 
-        v-model="extractVarForm.varValue" 
-        type="textarea" 
-        :rows="3"
-        readonly
-        placeholder="根据JSON路径自动提取的值将显示在这里"
-      />
-    </el-form-item>
-    
-    <el-form-item label="响应预览">
-      <el-input 
-        :value="runResultData.data" 
-        type="textarea" 
-        :rows="8"
-        readonly
-        style="font-family: monospace;"
-      />
-    </el-form-item>
-  </el-form>
-  
-  <template #footer>
-    <span class="dialog-footer">
-      <el-button @click="extractVarDialogVisible = false">取消</el-button>
-      <el-button type="primary" @click="confirmExtractVariable">确定</el-button>
-    </span>
-  </template>
-</el-dialog>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
-import { useRouter } from 'vue-router'
-import { getCases, addCase, updateCase, deleteCaseById, getGroups, getApis } from '../api/apiManage'
-import { addEnvironmentVariable, getEnvironments } from '../api/environmentManage'
-import axios from 'axios'
+import { ref, computed, onMounted, onUnmounted, reactive, toRefs } from 'vue'
+import { Search, Plus, Edit, Delete, VideoPlay, RefreshRight, Check } from '@element-plus/icons-vue'
+import { getCases, addCase, updateCase, deleteCaseById } from '@/api/caseManage'
+import { getApiList } from '@/api/apiManage'
+import { getGroupList } from '@/api/groupManage'
 import { ElMessageBox, ElMessage } from 'element-plus'
 
-const caseList = ref([])
-const groupList = ref([])
-const apiList = ref([])
-const selectedGroup = ref(null)
-const search = ref('')
-const caseDialogVisible = ref(false)
-const editMode = ref(false)
+// 状态管理
+const state = reactive({
+  caseList: [],
+  groupList: [],
+  apiList: [],
+  selectedGroup: null,
+  search: '',
+  loading: false,
+  currentPage: 1,
+  pageSize: 10,
+  total: 0,
+});
 
-// 运行结果对话框相关
-const runResultDialogVisible = ref(false)
-const runResultData = ref({
-  status: '',
-  time: 0,
-  data: '',
-  isError: false,
-  caseInfo: null
-})
-
-// 提取变量对话框相关
-const extractVarDialogVisible = ref(false)
-const extractVarForm = ref({
-  varName: '',
-  jsonPath: '',
-  varValue: '',
-  envId: ''
-})
-const envList = ref([])
-const form = ref({
-  id: null,
-  name: '',
-  description: '',
-  group_id: '',
-  api_id: '',
-  method: '',
-  request_url: '',
-  creator: ''
-})
-// 分页相关
-const casePage = ref(1)
-const casePageSize = ref(10)
-const isSmallScreen = ref(window.innerWidth <= 768)
+// 分页的用例列表
 const pagedCaseList = computed(() => {
-  let data = caseList.value
-  if (selectedGroup.value) {
-    data = data.filter(c => c.group_id === selectedGroup.value)
+  let filteredList = state.caseList;
+  
+  // 按分组筛选
+  if (state.selectedGroup) {
+    filteredList = filteredList.filter(item => item.group_id === state.selectedGroup);
   }
-  if (search.value && search.value.trim()) {
-    const keyword = search.value.trim().toLowerCase()
-    data = data.filter(c => c.name && c.name.toLowerCase().includes(keyword))
+  
+  // 按搜索关键字筛选
+  if (state.search) {
+    filteredList = filteredList.filter(item => 
+      item.name.toLowerCase().includes(state.search.toLowerCase())
+    );
   }
-  const start = (casePage.value - 1) * casePageSize.value
-  return data.slice(start, start + casePageSize.value)
-})
-// 获取用例列表
-const fetchCases = async () => {
-  const res = await getCases()
-  caseList.value = res.data || []
-}
-// 获取分组列表
-const fetchGroups = async () => {
-  const res = await getGroups()
-  groupList.value = res.data || []
-}
-// 获取API列表
-const fetchApis = async () => {
-  const res = await getApis()
-  apiList.value = res.data || []
-}
+  
+  // 更新总数
+  state.total = filteredList.length;
+  
+  // 分页
+  const start = (state.currentPage - 1) * state.pageSize;
+  const end = start + state.pageSize;
+  return filteredList.slice(start, end);
+});
 
-// 获取环境列表
-const fetchEnvironments = async () => {
+// API相关方法
+const getApiInfo = (apiId) => {
+  if (!apiId) return null;
+  return state.apiList.find(api => api.id === apiId);
+};
+
+// 分组相关方法
+const getGroupName = (groupId) => {
+  if (!groupId) return '-';
+  const group = state.groupList.find(g => g.id === groupId);
+  return group ? group.name : '-';
+};
+
+// 加载数据方法
+const loadApiList = async () => {
   try {
-    const res = await getEnvironments()
-    envList.value = res.data || []
+    const response = await getApiList();
+    state.apiList = response.data || [];
   } catch (error) {
-    console.error('获取环境列表失败:', error)
+    console.error('Failed to load API list:', error);
+    ElMessage.error(error.response?.data?.detail || '加载API列表失败');
+    state.apiList = [];
   }
-}
-// 搜索
+};
+
+const loadGroupList = async () => {
+  try {
+    const response = await getGroupList();
+    state.groupList = response.data || [];
+  } catch (error) {
+    console.error('Failed to load group list:', error);
+    ElMessage.error(error.response?.data?.detail || '加载分组列表失败');
+    state.groupList = [];
+  }
+};
+
+const loadCaseList = async () => {
+  try {
+    state.loading = true;
+    const response = await getCases();
+    state.caseList = response.data || [];
+    state.total = state.caseList.length;
+  } catch (error) {
+    console.error('Failed to load case list:', error);
+    ElMessage.error(error.response?.data?.detail || '加载用例列表失败');
+    state.caseList = [];
+    state.total = 0;
+  } finally {
+    state.loading = false;
+  }
+};
+
+// 操作处理方法
+const handleViewDetail = (row) => {
+  // TODO: 实现跳转到详情页的逻辑
+  console.log('View detail:', row);
+};
+
+const handleEdit = (row) => {
+  // TODO: 实现编辑功能
+  console.log('Edit:', row);
+};
+
+const handleDelete = async (row) => {
+  try {
+    await ElMessageBox.confirm(
+      `确认删除用例 "${row.name}" 吗？`,
+      '确认删除',
+      {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }
+    );
+    
+    await deleteCaseById(row.id);
+    ElMessage.success('删除成功');
+    await loadCaseList();
+  } catch (error) {
+    if (error !== 'cancel') {
+      console.error('Failed to delete case:', error);
+      ElMessage.error('删除失败');
+    }
+  }
+};
+
+const handleRun = (row) => {
+  // TODO: 实现运行功能
+  console.log('Run:', row);
+};
+
+// 分页处理
+const handleCurrentChange = (val) => {
+  state.currentPage = val;
+};
+
+const handleSizeChange = (val) => {
+  state.pageSize = val;
+  state.currentPage = 1;
+};
+
+// 搜索处理
 const handleSearch = () => {
-  casePage.value = 1
-}
-// 新增/编辑用例
-const saveCase = async () => {
-  if (editMode.value) {
-    await updateCase(form.value)
-  } else {
-    await addCase(form.value)
-  }
-  caseDialogVisible.value = false
-  fetchCases()
-}
-// 编辑用例
-const editCase = (item) => {
-  editMode.value = true
-  caseDialogVisible.value = true
-  form.value = { ...item }
-}
-// 新增用例弹窗
+  state.currentPage = 1;
+};
+
+// 表单处理
 const openCaseForm = () => {
-  editMode.value = false
-  form.value = {
-    id: null,
-    name: '',
-    description: '',
-    group_id: '',
-    api_id: '',
-    method: '',
-    request_url: '',
-    creator: ''
-  }
-  caseDialogVisible.value = true
-}
-// 删除用例
-const deleteCase = async (id) => {
-  try {
-    await ElMessageBox.confirm('确认删除此用例吗？', '提示', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning'
-    })
-    await deleteCaseById(id)
-    ElMessage.success('删除成功')
-    await fetchCases()
-  } catch (e) {
-    if (e !== 'cancel') {
-      ElMessage.error('删除失败: ' + (e.response?.data?.detail || e.message || '未知错误'))
-    }
-  }
-}
-// 获取分组名称
-const getGroupName = (id) => {
-  const group = groupList.value.find(g => g.id === id)
-  return group ? group.name : id
-}
-// 获取API名称
-const getApiName = (id) => {
-  const api = apiList.value.find(a => a.id === id)
-  return api ? api.name : id;
-}
-// 响应式
-const handleResize = () => {
-  isSmallScreen.value = window.innerWidth <= 768
-}
-onMounted(() => {
-  window.addEventListener('resize', handleResize)
-  fetchCases()
-  fetchGroups()
-  fetchApis()
-  fetchEnvironments()
-})
-onUnmounted(() => {
-  window.removeEventListener('resize', handleResize)
-})
-const router = useRouter()
-// 用例详情弹窗相关变量
-const caseDetailVisible = ref(false)
-const activeTab = ref('params')
-const url = ref('')
-const responseTime = ref(0)
-const statusCode = ref(200)
-const response = ref('')
-const params = ref([])
-const headers = ref([])
-const body = ref('')
-const goDetail = (row) => {
-  // 这里可根据 row 赋值详情内容
-  caseDetailVisible.value = true
-  // 示例：
-  url.value = row.request_url || ''
-  responseTime.value = 0
-  statusCode.value = 200
-  response.value = ''
-  params.value = []
-  headers.value = []
-  body.value = ''
-}
-// 运行用例
-const runCase = async (row) => {
-  // 支持 params/json/form 三种参数类型，优先判断 body 字段
-  let params = {}
-  let data = undefined
-  let headers = {}
-  let paramType = row.param_type || 'params'
-  try {
-    if (row.headers && typeof row.headers === 'string') headers = JSON.parse(row.headers)
-    else if (row.headers && typeof row.headers === 'object') headers = row.headers
-  } catch (e) {
-    ElMessage.error('Header格式错误，需为JSON字符串')
-    return
-  }
-  if (paramType === 'params') {
-    params = row.params || {}
-  } else if (paramType === 'json') {
-    try {
-      data = typeof row.body === 'string' ? JSON.parse(row.body) : row.body
-    } catch (e) {
-      ElMessage.error('JSON格式错误')
-      return
-    }
-  } else if (paramType === 'form') {
-    data = new URLSearchParams()
-    if (row.body) {
-      try {
-        const formObj = typeof row.body === 'string' ? JSON.parse(row.body) : row.body
-        Object.entries(formObj).forEach(([k, v]) => data.append(k, v))
-      } catch {
-        // 兼容 body 为 key1=val1&key2=val2 形式
-        String(row.body).split('&').forEach(pair => {
-          const [k, v] = pair.split('=')
-          if (k) data.append(k, v)
-        })
-      }
-    }
-    headers['Content-Type'] = 'application/x-www-form-urlencoded'
-  }
-  const url = row.request_url
-  const method = row.method ? row.method.toLowerCase() : 'get'
-  const start = Date.now()
-  try {
-    const res = await axios({
-      url,
-      method,
-      headers,
-      params: paramType === 'params' ? params : undefined,
-      data,
-      responseType: 'text'
-    })
-    const time = Date.now() - start
-    // 保存运行结果数据
-    runResultData.value = {
-      status: res.status,
-      time: time,
-      data: formatJson(res.data),
-      isError: false,
-      caseInfo: row
-    }
-    runResultDialogVisible.value = true
-  } catch (err) {
-    const time = Date.now() - start
-    const status = err?.response?.status || ''
-    const data = err?.response?.data || String(err)
-    // 保存运行失败结果数据
-    runResultData.value = {
-      status: status,
-      time: time,
-      data: formatJson(data),
-      isError: true,
-      caseInfo: row
-    }
-    runResultDialogVisible.value = true
-  }
-}
+  // TODO: 实现新增用例功能
+  console.log('Open case form');
+};
 
-// 提取变量函数
-const extractVariable = () => {
-  // 尝试从运行的用例中获取环境ID
-  let defaultEnvId = ''
-  if (runResultData.value.caseInfo) {
-    // 从API列表中找到对应的API，获取其env_id
-    const api = apiList.value.find(api => api.id === runResultData.value.caseInfo.api_id)
-    if (api && api.env_id) {
-      defaultEnvId = api.env_id
-    }
-  }
-  
-  // 清空表单
-  extractVarForm.value = {
-    varName: '',
-    jsonPath: '',
-    varValue: '',
-    envId: defaultEnvId
-  }
-  
-  // 关闭运行结果对话框，打开提取变量对话框
-  runResultDialogVisible.value = false
-  extractVarDialogVisible.value = true
-  
-  // 在下一个tick中聚焦到变量名输入框
-  nextTick(() => {
-    // 可以在这里添加聚焦逻辑
-  })
-}
-
-// 确认提取变量
-const confirmExtractVariable = async () => {
+// 生命周期钩子
+onMounted(async () => {
   try {
-    if (!extractVarForm.value.varName.trim()) {
-      ElMessage.error('请输入变量名')
-      return
-    }
-    
-    if (!extractVarForm.value.jsonPath.trim()) {
-      ElMessage.error('请输入JSON路径')
-      return
-    }
-    
-    if (!extractVarForm.value.envId) {
-      ElMessage.error('请选择环境')
-      return
-    }
-    
-    if (!extractVarForm.value.varValue.trim()) {
-      ElMessage.error('提取的值为空，请检查JSON路径')
-      return
-    }
-    
-    // 调用API保存环境变量
-    await addEnvironmentVariable({
-      env_id: extractVarForm.value.envId,
-      key: extractVarForm.value.varName.trim(),
-      value: extractVarForm.value.varValue.trim()
-    })
-    
-    ElMessage.success(`变量 "${extractVarForm.value.varName}" 已成功保存到环境变量`)
-    extractVarDialogVisible.value = false
+    state.loading = true;
+    await Promise.all([
+      loadApiList(),
+      loadGroupList(),
+      loadCaseList(),
+    ]);
   } catch (error) {
-    console.error('提取变量失败:', error)
-    if (error.response?.status === 400 && error.response?.data?.detail?.includes('already exists')) {
-      ElMessage.error('该环境中已存在同名变量')
-    } else {
-      ElMessage.error('提取变量失败: ' + (error.response?.data?.detail || error.message))
-    }
+    console.error('Failed to initialize data:', error);
+    ElMessage.error('初始化数据失败');
+  } finally {
+    state.loading = false;
   }
-}
+});
 
-// 解析JSON路径并提取值
-const parseJsonPath = () => {
-  try {
-    const responseData = JSON.parse(runResultData.value.data)
-    const path = extractVarForm.value.jsonPath.trim()
-    
-    if (!path) {
-      extractVarForm.value.varValue = ''
-      return
-    }
-    
-    // 处理JSONPath格式 (支持 $.data.token 或 data.token 格式)
-    let normalizedPath = path
-    if (normalizedPath.startsWith('$.')) {
-      normalizedPath = normalizedPath.substring(2) // 移除 '$.'
-    } else if (normalizedPath.startsWith('$')) {
-      normalizedPath = normalizedPath.substring(1) // 移除 '$'
-    }
-    
-    // 如果路径为空（只输入了$），则返回整个响应
-    if (!normalizedPath) {
-      extractVarForm.value.varValue = JSON.stringify(responseData, null, 2)
-      return
-    }
-    
-    // 分割路径
-    const keys = normalizedPath.split('.')
-    let value = responseData
-    
-    // 逐级访问对象属性
-    for (const key of keys) {
-      if (key.trim() === '') continue // 跳过空key
-      
-      if (value && typeof value === 'object' && key in value) {
-        value = value[key]
-      } else {
-        // 如果路径无效，显示错误信息
-        extractVarForm.value.varValue = `路径无效: 在 "${key}" 处未找到属性`
-        return
-      }
-    }
-    
-    // 格式化输出值
-    if (typeof value === 'string') {
-      extractVarForm.value.varValue = value
-    } else if (typeof value === 'number' || typeof value === 'boolean') {
-      extractVarForm.value.varValue = String(value)
-    } else if (value === null) {
-      extractVarForm.value.varValue = 'null'
-    } else if (value === undefined) {
-      extractVarForm.value.varValue = 'undefined'
-    } else {
-      extractVarForm.value.varValue = JSON.stringify(value, null, 2)
-    }
-    
-  } catch (error) {
-    extractVarForm.value.varValue = `解析错误: ${error.message}`
-    console.error('JSON路径解析失败:', error)
-  }
-}
+// 导出状态和方法
+const { 
+  caseList, 
+  groupList, 
+  apiList, 
+  loading, 
+  currentPage, 
+  pageSize, 
+  total,
+  selectedGroup,
+  search,
+} = toRefs(state);
 
-function formatJson(data) {
-  if (typeof data === 'string') {
-    try {
-      return JSON.stringify(JSON.parse(data), null, 2)
-    } catch {
-      return data
-    }
-  }
-  return JSON.stringify(data, null, 2)
-}
+defineExpose({
+  caseList,
+  groupList,
+  apiList,
+  loading,
+  currentPage,
+  pageSize,
+  total,
+  selectedGroup,
+  search,
+  pagedCaseList,
+  getApiInfo,
+  getGroupName,
+  handleViewDetail,
+  handleEdit,
+  handleDelete,
+  handleRun,
+  handleCurrentChange,
+  handleSizeChange,
+  handleSearch,
+  openCaseForm,
+});
 </script>
 

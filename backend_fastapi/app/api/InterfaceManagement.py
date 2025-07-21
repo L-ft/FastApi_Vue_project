@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from ..db import get_db
 from ..models import ApiInfo
 from ..schemas import ApiInfoOut, ApiInfoCreate
-from ..models import Environment
+from ..models import EnvironmentVariable
 import logging
 
 router = APIRouter()
@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 # API接口
 # 新增接口
-@router.post("/info", response_model=ApiInfoOut)
+@router.post("/apis", response_model=ApiInfoOut)
 def create_api(api: ApiInfoCreate, db: Session = Depends(get_db)):
     """
     创建新的API接口
@@ -34,15 +34,30 @@ def create_api(api: ApiInfoCreate, db: Session = Depends(get_db)):
     return db_api
 
 # 查询接口
-@router.get("/info", response_model=list[ApiInfoOut])
+
+@router.get("/apis", response_model=list[ApiInfoOut])
 def list_apis(db: Session = Depends(get_db)):
+    """
+    获取所有API接口列表（自动修正，手动构造 ApiInfoOut，避免文档卡死）
+    """
     logger.info("Fetching all APIs")
+    from ..models import Environment
     apis = db.query(ApiInfo).all()
-    # 关联环境名
     envs = {e.id: e.name for e in db.query(Environment).all()}
+    result = []
     for api in apis:
-        api.env_name = envs.get(api.env_id) if api.env_id else None
-    return apis
+        result.append(ApiInfoOut(
+            id=api.id,
+            name=api.name,
+            url=api.url,
+            method=api.method,
+            group_id=api.group_id,
+            env_id=api.env_id,
+            env_name=envs.get(api.env_id) if api.env_id else None,
+            description=api.description
+        ))
+    logger.info(f"Successfully fetched {len(result)} apis")
+    return result
 
 # 修改接口
 @router.put("/info/{api_id}", response_model=ApiInfoOut)

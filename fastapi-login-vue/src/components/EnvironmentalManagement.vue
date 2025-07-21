@@ -345,6 +345,20 @@ const deleteEnvVar = async (id) => {
   }
 }
 
+const envVarForm = ref({
+  env_id: '',
+  key: '',
+  value: ''
+})
+
+const envVarRules = {
+  env_id: [{ required: true, message: '请选择所属环境', trigger: 'change' }],
+  key: [{ required: true, message: '请输入变量名', trigger: 'blur' }],
+  value: [{ required: true, message: '请输入变量值', trigger: 'blur' }]
+}
+
+const envVarFormRef = ref()
+
 // 提交环境变量表单
 const submitEnvVarForm = async () => {
   if (!envVarFormRef.value) return
@@ -353,9 +367,16 @@ const submitEnvVarForm = async () => {
     await envVarFormRef.value.validate()
     loading.value = true
     
-    await addEnvironmentVariable(envVarForm.value)
+    if (envVarForm.value.id) {
+      // 更新已存在的环境变量
+      await updateEnvironmentVariable(envVarForm.value.id, envVarForm.value)
+      ElMessage.success('更新成功')
+    } else {
+      // 创建新的环境变量
+      await addEnvironmentVariable(envVarForm.value)
+      ElMessage.success('添加成功')
+    }
     
-    ElMessage.success('添加成功')
     showEnvVarDialog.value = false
     // 重置表单
     envVarForm.value = {
@@ -366,8 +387,8 @@ const submitEnvVarForm = async () => {
     // 重新加载环境变量列表
     fetchEnvVars()
   } catch (error) {
-    console.error('添加环境变量失败:', error)
-    ElMessage.error('添加失败')
+    console.error('操作环境变量失败:', error)
+    ElMessage.error(error?.response?.data?.detail || '操作失败')
   } finally {
     loading.value = false
   }

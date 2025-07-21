@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy import DateTime
+from sqlalchemy import DateTime, UniqueConstraint
 
 from .db import Base, engine  # 使用相对导入
 from sqlalchemy import Column, Integer, String, ForeignKey
@@ -49,14 +49,20 @@ class Environment(Base):
 #   created_at(datetime): 创建时间
 #   updated_at(datetime): 更新时间
 class EnvironmentVariable(Base):
+    """环境变量表"""
     __tablename__ = "environment_variables"
     
     id = Column(Integer, primary_key=True, index=True)
     env_id = Column(Integer, ForeignKey("environments.id", ondelete="CASCADE"), nullable=False)
-    key = Column(String(50), nullable=False)
+    key = Column("key", String(50), nullable=False)  # 明确指定字段名为key
     value = Column(String(500), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # 添加联合唯一约束
+    __table_args__ = (
+        UniqueConstraint('env_id', 'key', name='unique_env_key'),
+    )
 
 # 创建所有表（如果不存在）
 # 参数:
@@ -97,7 +103,9 @@ class ApiInfo(Base):
     name = Column(String(100), nullable=False)
     url = Column(String(255), nullable=False)
     method = Column(String(10), nullable=False)
-    group_id = Column(Integer, ForeignKey("api_group.id"))
+    group_id = Column(Integer, ForeignKey("api_group.id", ondelete="SET NULL"), nullable=True)
+    env_id = Column(Integer, ForeignKey("environments.id", ondelete="SET NULL"), nullable=True)
+    description = Column(String(255), nullable=True)
     env_id = Column(Integer, ForeignKey("environments.id"), nullable=True)
     description = Column(String(255), nullable=True)
 

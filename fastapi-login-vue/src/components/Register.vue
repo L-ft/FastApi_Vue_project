@@ -38,7 +38,7 @@ const registerData = ref({
 
 const submitRegister = async () => {
   try {
-    const response = await axios.post('http://127.0.0.1:8001/api/register', registerData.value);
+    const response = await axios.post('http://localhost:8000/register', registerData.value);
     window.location.href = '/login';
   } catch (error) {
     if (error.response && error.response.data && error.response.data.detail) {
