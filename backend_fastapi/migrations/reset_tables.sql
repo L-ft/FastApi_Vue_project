@@ -1,0 +1,25 @@
+-- 删除已存在的表（如果存在）
+DROP TABLE IF EXISTS environment_variables;
+DROP TABLE IF EXISTS environments;
+
+-- 创建环境表
+CREATE TABLE environments (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL,
+    value VARCHAR(500) NOT NULL,
+    description VARCHAR(200),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- 创建环境变量表
+CREATE TABLE environment_variables (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    env_id INTEGER NOT NULL,
+    `key` VARCHAR(50) NOT NULL,
+    value VARCHAR(500) NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (env_id) REFERENCES environments(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_env_key (env_id, `key`)
+);
