@@ -48,7 +48,7 @@ class ApiGroupOut(BaseModel):
     id: int
     name: str
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class ApiGroupUpdate(BaseModel):
     """
@@ -97,8 +97,36 @@ class ApiInfoOut(BaseModel):
     env_id: Optional[int]
     description: Optional[str]
     class Config:
-        orm_mode = True
+        from_attributes = True
 
+
+# ---------------- 环境管理 ----------------
+
+# ---------------- 环境Pydantic ----------------
+class EnvironmentBase(BaseModel):
+    """环境的基础模型"""
+    name: str
+    value: str
+    description: Optional[str] = None
+
+class EnvironmentCreate(EnvironmentBase):
+    """用于创建环境的请求模型"""
+    pass
+
+class EnvironmentUpdate(BaseModel):
+    """用于更新环境的请求模型"""
+    name: Optional[str] = None
+    value: Optional[str] = None
+    description: Optional[str] = None
+
+class Environment(EnvironmentBase):
+    """环境的响应模型"""
+    id: int
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
 
 # ---------------- 环境变量管理 ----------------
 
@@ -125,7 +153,7 @@ class EnvironmentVariable(EnvironmentVariableBase):
     updated_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # ---------------- 用例管理Pydantic ----------------
 class TestCaseCreate(BaseModel):
@@ -188,7 +216,7 @@ class TestCaseOut(BaseModel):
     expected_status: int
     expected_response: Optional[Dict[str, Any]]
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class TestCaseUpdate(BaseModel):
     """
@@ -244,7 +272,7 @@ class TestCaseGroupOut(BaseModel):
     name: str
     description: Optional[str]
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class TestCaseGroupUpdate(BaseModel):
     """

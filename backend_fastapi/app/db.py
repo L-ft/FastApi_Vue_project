@@ -1,7 +1,9 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-SQLALCHEMY_DATABASE_URL = "mysql+pymysql://root:1011%40@localhost/autotest"
+from urllib.parse import quote_plus
+password = quote_plus("1011@")  # 正确编码密码中的特殊字符
+SQLALCHEMY_DATABASE_URL = f"mysql+pymysql://root:{password}@localhost/autotest"
 # 数据库引擎对象，用于管理数据库连接
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 # 创建会话工厂，用于生成数据库会话实例

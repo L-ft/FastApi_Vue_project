@@ -20,7 +20,6 @@
           </div>
           <div class="right-section">
             <el-button type="primary" @click="openApiForm()">新增接口</el-button>
-            <el-button type="success" @click="openEnvVarForm()">新增变量</el-button>
           </div>
         </div>
         <div class="table-section" style="overflow-x:auto;">
@@ -347,6 +346,54 @@ const emit = defineEmits(['add-env-var'])
 import { addCase } from '../api/apiManage'
 import { ElMessage } from 'element-plus'
 
+// 在 script setup 部分添加环境变量相关的响应式数据
+const envDialogVisible = ref(false)
+const envForm = ref({
+  name: '',
+  value: '',
+  description: ''
+})
+const isEditEnv = ref(false)
+
+// 修改 openEnvVarForm 方法
+const openEnvVarForm = (env = null) => {
+  if (env) {
+    envForm.value = {
+      ...env,
+      description: env.description || ''
+    }
+    isEditEnv.value = true
+  } else {
+    envForm.value = { name: '', value: '', description: '' }
+    isEditEnv.value = false
+  }
+  envDialogVisible.value = true
+}
+
+// 添加环境变量提交方法
+const submitEnvForm = async () => {
+  try {
+    // 验证必填字段
+    if (!envForm.value.name || !envForm.value.value) {
+      ElMessage.error('环境名称和环境地址不能为空')
+      return
+    }
+    
+    if (isEditEnv.value) {
+      await updateEnvironment(envForm.value.id, envForm.value)
+      ElMessage.success('环境更新成功')
+    } else {
+      await addEnvironment(envForm.value)
+      ElMessage.success('环境添加成功')
+    }
+    
+    envDialogVisible.value = false
+    await fetchEnvs() // 刷新环境列表
+  } catch (error) {
+    console.error('环境操作失败:', error)
+    ElMessage.error('操作失败：' + (error.response?.data?.detail || error.message))
+  }
+}
 // 保存调试内容为用例
 const saveDebugAsCase = async () => {
   // 组装用例数据
@@ -537,11 +584,6 @@ onUnmounted(() => {
 const openGroupForm = () => {
   // 触发新增分组事件，您可以根据需要修改实现
   console.log('Open group form')
-}
-
-const openEnvVarForm = () => {
-  // 发出事件，让父组件处理环境变量的添加
-  emit('add-env-var')
 }
 
 // 调试相关

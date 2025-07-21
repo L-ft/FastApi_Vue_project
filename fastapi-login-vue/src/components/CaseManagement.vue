@@ -302,6 +302,31 @@
     }
   }
 }
+
+/* 运行结果对话框样式 */
+.error-response {
+  color: #f56c6c !important;
+}
+
+:deep(.el-dialog__body) {
+  padding: 20px;
+}
+
+:deep(.dialog-footer) {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+/* 提取变量对话框样式 */
+:deep(.el-form-item__content) {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+:deep(.el-textarea__inner) {
+  font-family: 'Courier New', monospace;
+}
 </style>
 <template>
   <el-container class="app-container">
@@ -472,12 +497,154 @@
     </div>
   </el-card>
 </el-dialog>
+
+<!-- 运行结果对话框 -->
+<el-dialog 
+  v-model="runResultDialogVisible" 
+  :title="runResultData.isError ? '运行失败' : '运行结果'"
+  width="60%"
+  :close-on-click-modal="false"
+>
+  <div style="text-align: left;">
+    <div style="margin-bottom: 16px;">
+      <strong>状态码:</strong> 
+      <span :style="{ color: runResultData.isError ? 'red' : 'green' }">
+        {{ runResultData.status }}
+      </span>
+    </div>
+    <div style="margin-bottom: 16px;">
+      <strong>耗时:</strong> {{ runResultData.time }}ms
+    </div>
+    <div style="margin-bottom: 16px;">
+      <strong>响应:</strong>
+    </div>
+    <el-input
+      type="textarea"
+      :rows="15"
+      v-model="runResultData.data"
+      readonly
+      style="font-family: monospace; white-space: pre-wrap;"
+      :class="{ 'error-response': runResultData.isError }"
+    />
+  </div>
+  
+  <template #footer>
+    <span class="dialog-footer">
+      <el-button 
+        v-if="!runResultData.isError" 
+        type="primary" 
+        @click="extractVariable"
+      >
+        提取变量
+      </el-button>
+      <el-button @click="runResultDialogVisible = false">关闭</el-button>
+    </span>
+  </template>
+</el-dialog>
+
+<!-- 提取变量对话框 -->
+<el-dialog 
+  v-model="extractVarDialogVisible" 
+  title="提取变量"
+  width="50%"
+  :close-on-click-modal="false"
+>
+  <el-form :model="extractVarForm" label-width="100px">
+    <el-form-item label="变量名" required>
+      <el-input 
+        v-model="extractVarForm.varName" 
+        placeholder="请输入变量名，如: access_token"
+      />
+    </el-form-item>
+    
+    <el-form-item label="所属环境" required>
+      <el-select 
+        v-model="extractVarForm.envId" 
+        placeholder="请选择环境"
+        style="width: 100%"
+      >
+        <el-option 
+          v-for="env in envList" 
+          :key="env.id" 
+          :label="env.name" 
+          :value="env.id" 
+        />
+      </el-select>
+    </el-form-item>
+    
+    <el-form-item label="JSON路径" required>
+      <el-input 
+        v-model="extractVarForm.jsonPath" 
+        placeholder="请输入JSON路径，如: $.data.accessToken 或 data.accessToken"
+        @input="parseJsonPath"
+      />
+      <div style="font-size: 12px; color: #909399; margin-top: 4px;">
+        支持JSONPath格式：$.data.token 或点号分隔：data.user.id
+      </div>
+      <div style="margin-top: 8px;">
+        <span style="font-size: 12px; color: #666;">常用路径：</span>
+        <el-button 
+          size="small" 
+          text 
+          type="primary" 
+          @click="extractVarForm.jsonPath = '$.data'; parseJsonPath()"
+        >
+          $.data
+        </el-button>
+        <el-button 
+          size="small" 
+          text 
+          type="primary" 
+          @click="extractVarForm.jsonPath = '$.data.accessToken'; parseJsonPath()"
+        >
+          $.data.accessToken
+        </el-button>
+        <el-button 
+          size="small" 
+          text 
+          type="primary" 
+          @click="extractVarForm.jsonPath = '$.data.token'; parseJsonPath()"
+        >
+          $.data.token
+        </el-button>
+      </div>
+    </el-form-item>
+    
+    <el-form-item label="提取的值">
+      <el-input 
+        v-model="extractVarForm.varValue" 
+        type="textarea" 
+        :rows="3"
+        readonly
+        placeholder="根据JSON路径自动提取的值将显示在这里"
+      />
+    </el-form-item>
+    
+    <el-form-item label="响应预览">
+      <el-input 
+        :value="runResultData.data" 
+        type="textarea" 
+        :rows="8"
+        readonly
+        style="font-family: monospace;"
+      />
+    </el-form-item>
+  </el-form>
+  
+  <template #footer>
+    <span class="dialog-footer">
+      <el-button @click="extractVarDialogVisible = false">取消</el-button>
+      <el-button type="primary" @click="confirmExtractVariable">确定</el-button>
+    </span>
+  </template>
+</el-dialog>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { getCases, addCase, updateCase, deleteCaseById, getGroups, getApis } from '../api/apiManage'
+import { addEnvironmentVariable, getEnvironments } from '../api/environmentManage'
 import axios from 'axios'
 import { ElMessageBox, ElMessage } from 'element-plus'
 
@@ -488,6 +655,26 @@ const selectedGroup = ref(null)
 const search = ref('')
 const caseDialogVisible = ref(false)
 const editMode = ref(false)
+
+// 运行结果对话框相关
+const runResultDialogVisible = ref(false)
+const runResultData = ref({
+  status: '',
+  time: 0,
+  data: '',
+  isError: false,
+  caseInfo: null
+})
+
+// 提取变量对话框相关
+const extractVarDialogVisible = ref(false)
+const extractVarForm = ref({
+  varName: '',
+  jsonPath: '',
+  varValue: '',
+  envId: ''
+})
+const envList = ref([])
 const form = ref({
   id: null,
   name: '',
@@ -528,6 +715,16 @@ const fetchGroups = async () => {
 const fetchApis = async () => {
   const res = await getApis()
   apiList.value = res.data || []
+}
+
+// 获取环境列表
+const fetchEnvironments = async () => {
+  try {
+    const res = await getEnvironments()
+    envList.value = res.data || []
+  } catch (error) {
+    console.error('获取环境列表失败:', error)
+  }
 }
 // 搜索
 const handleSearch = () => {
@@ -600,6 +797,7 @@ onMounted(() => {
   fetchCases()
   fetchGroups()
   fetchApis()
+  fetchEnvironments()
 })
 onUnmounted(() => {
   window.removeEventListener('resize', handleResize)
@@ -679,20 +877,161 @@ const runCase = async (row) => {
       responseType: 'text'
     })
     const time = Date.now() - start
-    ElMessageBox.alert(
-      `<div style='text-align:left;'><b>状态码:</b> ${res.status}<br/><b>耗时:</b> ${time}ms<br/><b>响应:</b><pre style='white-space:pre-wrap;'>${formatJson(res.data)}</pre></div>`,
-      '运行结果',
-      { dangerouslyUseHTMLString: true, customClass: 'run-result-dialog', confirmButtonText: '关闭' }
-    )
+    // 保存运行结果数据
+    runResultData.value = {
+      status: res.status,
+      time: time,
+      data: formatJson(res.data),
+      isError: false,
+      caseInfo: row
+    }
+    runResultDialogVisible.value = true
   } catch (err) {
     const time = Date.now() - start
     const status = err?.response?.status || ''
     const data = err?.response?.data || String(err)
-    ElMessageBox.alert(
-      `<div style='text-align:left;'><b>状态码:</b> ${status}<br/><b>耗时:</b> ${time}ms<br/><b>响应:</b><pre style='white-space:pre-wrap;color:red;'>${formatJson(data)}</pre></div>`,
-      '运行失败',
-      { dangerouslyUseHTMLString: true, customClass: 'run-result-dialog', confirmButtonText: '关闭' }
-    )
+    // 保存运行失败结果数据
+    runResultData.value = {
+      status: status,
+      time: time,
+      data: formatJson(data),
+      isError: true,
+      caseInfo: row
+    }
+    runResultDialogVisible.value = true
+  }
+}
+
+// 提取变量函数
+const extractVariable = () => {
+  // 尝试从运行的用例中获取环境ID
+  let defaultEnvId = ''
+  if (runResultData.value.caseInfo) {
+    // 从API列表中找到对应的API，获取其env_id
+    const api = apiList.value.find(api => api.id === runResultData.value.caseInfo.api_id)
+    if (api && api.env_id) {
+      defaultEnvId = api.env_id
+    }
+  }
+  
+  // 清空表单
+  extractVarForm.value = {
+    varName: '',
+    jsonPath: '',
+    varValue: '',
+    envId: defaultEnvId
+  }
+  
+  // 关闭运行结果对话框，打开提取变量对话框
+  runResultDialogVisible.value = false
+  extractVarDialogVisible.value = true
+  
+  // 在下一个tick中聚焦到变量名输入框
+  nextTick(() => {
+    // 可以在这里添加聚焦逻辑
+  })
+}
+
+// 确认提取变量
+const confirmExtractVariable = async () => {
+  try {
+    if (!extractVarForm.value.varName.trim()) {
+      ElMessage.error('请输入变量名')
+      return
+    }
+    
+    if (!extractVarForm.value.jsonPath.trim()) {
+      ElMessage.error('请输入JSON路径')
+      return
+    }
+    
+    if (!extractVarForm.value.envId) {
+      ElMessage.error('请选择环境')
+      return
+    }
+    
+    if (!extractVarForm.value.varValue.trim()) {
+      ElMessage.error('提取的值为空，请检查JSON路径')
+      return
+    }
+    
+    // 调用API保存环境变量
+    await addEnvironmentVariable({
+      env_id: extractVarForm.value.envId,
+      key: extractVarForm.value.varName.trim(),
+      value: extractVarForm.value.varValue.trim()
+    })
+    
+    ElMessage.success(`变量 "${extractVarForm.value.varName}" 已成功保存到环境变量`)
+    extractVarDialogVisible.value = false
+  } catch (error) {
+    console.error('提取变量失败:', error)
+    if (error.response?.status === 400 && error.response?.data?.detail?.includes('already exists')) {
+      ElMessage.error('该环境中已存在同名变量')
+    } else {
+      ElMessage.error('提取变量失败: ' + (error.response?.data?.detail || error.message))
+    }
+  }
+}
+
+// 解析JSON路径并提取值
+const parseJsonPath = () => {
+  try {
+    const responseData = JSON.parse(runResultData.value.data)
+    const path = extractVarForm.value.jsonPath.trim()
+    
+    if (!path) {
+      extractVarForm.value.varValue = ''
+      return
+    }
+    
+    // 处理JSONPath格式 (支持 $.data.token 或 data.token 格式)
+    let normalizedPath = path
+    if (normalizedPath.startsWith('$.')) {
+      normalizedPath = normalizedPath.substring(2) // 移除 '$.'
+    } else if (normalizedPath.startsWith('$')) {
+      normalizedPath = normalizedPath.substring(1) // 移除 '$'
+    }
+    
+    // 如果路径为空（只输入了$），则返回整个响应
+    if (!normalizedPath) {
+      extractVarForm.value.varValue = JSON.stringify(responseData, null, 2)
+      return
+    }
+    
+    // 分割路径
+    const keys = normalizedPath.split('.')
+    let value = responseData
+    
+    // 逐级访问对象属性
+    for (const key of keys) {
+      if (key.trim() === '') continue // 跳过空key
+      
+      if (value && typeof value === 'object' && key in value) {
+        value = value[key]
+      } else {
+        // 如果路径无效，显示错误信息
+        extractVarForm.value.varValue = `路径无效: 在 "${key}" 处未找到属性`
+        return
+      }
+    }
+    
+    // 格式化输出值
+    if (typeof value === 'string') {
+      extractVarForm.value.varValue = value
+    } else if (typeof value === 'number' || typeof value === 'boolean') {
+      extractVarForm.value.varValue = String(value)
+    } else if (value === null) {
+      extractVarForm.value.varValue = 'null'
+    } else if (value === undefined) {
+      extractVarForm.value.varValue = 'undefined'
+    } else {
+      extractVarForm.value.varValue = JSON.stringify(value, null, 2)
+    }
+    
+  } catch (error) {
+    extractVarForm.value.varValue = `解析错误: ${error.message}`
+    console.error('JSON路径解析失败:', error)
   }
 }
 

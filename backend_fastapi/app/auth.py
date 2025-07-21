@@ -20,7 +20,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 # pwd_context: 密码加密上下文，使用bcrypt算法
 # oauth2_scheme: OAuth2密码承载方案，用于获取token
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/token")
 
 
 def hash_password(password: str) -> str:

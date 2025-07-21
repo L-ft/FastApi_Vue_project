@@ -14,7 +14,7 @@ import { useRouter } from 'vue-router'
 import axios from 'axios'
 import ApiManage from './ApiManage.vue'
 
-const API = 'http://127.0.0.1:8000'
+const API = 'http://127.0.0.1:8001'
 const router = useRouter()
 const username = ref('')
 

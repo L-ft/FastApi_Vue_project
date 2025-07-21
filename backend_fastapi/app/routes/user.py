@@ -16,7 +16,10 @@ from ..models import UserDB  # 使用相对导入
 
 # ---------------- FastAPI 应用 ----------------
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/api",
+    tags=["authentication"]
+)
 @router.post("/register")
 def register(user: UserCreate, db: Session = Depends(get_db)):
     print("收到注册请求", user.username)
