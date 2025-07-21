@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, DeclarativeBase
+from sqlalchemy.orm import sessionmaker, declarative_base
 
 SQLALCHEMY_DATABASE_URL = "mysql+pymysql://root:1011%40@localhost/autotest"
 # 数据库引擎对象，用于管理数据库连接
@@ -7,8 +7,7 @@ engine = create_engine(SQLALCHEMY_DATABASE_URL)
 # 创建会话工厂，用于生成数据库会话实例
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
 # 声明式模型基类，用于定义ORM模型
-class Base(DeclarativeBase):
-    pass
+Base = declarative_base()
 
 
 def get_db():
