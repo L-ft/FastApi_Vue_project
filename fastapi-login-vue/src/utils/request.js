@@ -3,12 +3,12 @@ import { ElMessage } from 'element-plus'
 
 // 创建axios实例
 
-// 设置默认的baseURL为8001端口（FastAPI新端口）
-const defaultBase = 'http://127.0.0.1:8001';
+// 设置默认的baseURL为8000端口（FastAPI端口）
+const defaultBase = 'http://127.0.0.1:8000';
 const service = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || defaultBase, // api的base_url
   timeout: 15000, // 请求超时时间
-  withCredentials: true // 允许携带cookie
+  withCredentials: false // 暂时禁用 credentials 避免 CORS 问题
 })
 
 // request拦截器

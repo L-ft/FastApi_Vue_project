@@ -174,6 +174,24 @@
               <el-option label="DELETE" value="DELETE" />
             </el-select>
           </el-form-item>
+
+          <!-- 环境选择 -->
+          <el-form-item label="所属环境">
+            <el-select v-model="debugEnvironment" placeholder="选择环境" style="width: 200px" clearable>
+              <el-option
+                v-for="env in environments"
+                :key="env.id"
+                :label="env.name"
+                :value="env.id"
+              >
+                <div style="display: flex; justify-content: space-between;">
+                  <span>{{ env.name }}</span>
+                  <span style="color: #8492a6; font-size: 13px;">{{ env.value }}</span>
+                </div>
+              </el-option>
+            </el-select>
+          </el-form-item>
+
           <!-- 请求地址输入 -->
           <el-form-item label="请求地址">
             <el-input v-model="debugUrl" placeholder="请输入请求地址" />
@@ -342,11 +360,13 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { Search, Plus, Delete } from '@element-plus/icons-vue';
-import { addCase } from '../api/apiManage';
+import { addCase as createCase } from '../api/caseManage';
 import { ElMessage } from 'element-plus';
 import { getApiList, deleteApi, addApi, updateApi } from '../api/apiManage';
 import { getApiGroups } from '../api/apiManage';
+import { getEnvironments } from '../api/environmentManage';
 import axios from 'axios';
+import request from '@/utils/request';
 
 // 接口相关
 const pagedApis = ref([]);
@@ -371,10 +391,14 @@ const apiForm = ref({
 // 分组列表
 const groups = ref([]);
 
+// 环境列表
+const environments = ref([]);
+
 // 调试相关
 const debugDialogVisible = ref(false);
 const debugMethod = ref('GET');
 const debugUrl = ref('');
+const debugEnvironment = ref(null);
 const debugParamType = ref('params');
 const debugParamsList = ref([]);
 const debugJson = ref('');
@@ -468,8 +492,20 @@ const fetchGroups = async () => {
   await fetchApis();
 };
 
-// 页面初始化时调用 fetchGroups
+const fetchEnvironments = async () => {
+  try {
+    const res = await getEnvironments();
+    environments.value = res.data || [];
+  } catch (error) {
+    console.error('Failed to load environments:', error);
+    ElMessage.error('加载环境列表失败');
+    environments.value = [];
+  }
+};
+
+// 页面初始化时调用 fetchGroups 和 fetchEnvironments
 fetchGroups();
+fetchEnvironments();
 
 // 检测屏幕尺寸
 const isSmallScreen = ref(window.innerWidth <= 768);
@@ -489,9 +525,16 @@ onUnmounted(() => {
 
 // 调试相关
 const runApi = (row) => {
+  console.log('runApi called with:', row);
   debugApi.value = row;
   debugMethod.value = row.method;
-  debugUrl.value = row.url;
+  // 确保 URL 是相对路径格式，方便 request 实例处理
+  debugUrl.value = row.url.startsWith('/') ? row.url : `/${row.url}`;
+  console.log('debugUrl set to:', debugUrl.value);
+  
+  // 如果API有关联的环境ID，则设置为默认环境
+  debugEnvironment.value = row.env_id || null;
+  
   debugParamType.value = 'params';
   debugParamsList.value = [{ key: '', value: '', type: 'string', desc: '' }];
   debugJson.value = '';
@@ -499,6 +542,7 @@ const runApi = (row) => {
   debugHeaders.value = '';
   debugResult.value = '';
   debugDialogVisible.value = true;
+  console.log('debugDialogVisible set to:', debugDialogVisible.value);
 };
 
 const addParam = () => {
@@ -515,6 +559,17 @@ const removeParam = (idx) => {
 
 // 保存调试内容为用例
 const saveDebugAsCase = async () => {
+  // 验证必需的数据
+  if (!debugUrl.value.trim()) {
+    ElMessage.error('请输入请求地址');
+    return;
+  }
+  
+  if (!debugMethod.value) {
+    ElMessage.error('请选择请求方法');
+    return;
+  }
+
   // 组装用例数据
   // 组装 params
   let params = undefined, headers = undefined, body = undefined;
@@ -524,40 +579,98 @@ const saveDebugAsCase = async () => {
       if (item.key) params[item.key] = item.value;
     });
   } else if (debugParamType.value === 'json') {
-    try { body = debugJson.value ? JSON.parse(debugJson.value) : undefined; } catch { body = undefined; }
+    try { 
+      body = debugJson.value ? JSON.parse(debugJson.value) : undefined; 
+    } catch (e) { 
+      ElMessage.error('JSON格式错误，请检查请求体格式');
+      return;
+    }
   } else if (debugParamType.value === 'form') {
     body = {};
     debugForm.value.split('\n').filter(Boolean).forEach(line => {
       const [k, v] = line.split('=');
-      body[k] = v;
+      if (k && v) body[k] = v;
     });
   }
+  
   // headers
-  try { headers = debugHeaders.value ? JSON.parse(debugHeaders.value) : undefined; } catch { headers = undefined; }
+  try { 
+    headers = debugHeaders.value ? JSON.parse(debugHeaders.value) : undefined; 
+  } catch (e) { 
+    ElMessage.error('请求头格式错误，请检查JSON格式');
+    return;
+  }
+
+  // 构建完整的请求URL
+  let fullUrl = debugUrl.value;
+  if (debugEnvironment.value) {
+    const selectedEnv = environments.value.find(env => env.id === debugEnvironment.value);
+    if (selectedEnv) {
+      const baseUrl = selectedEnv.value.endsWith('/') ? selectedEnv.value.slice(0, -1) : selectedEnv.value;
+      const requestPath = debugUrl.value.startsWith('/') ? debugUrl.value : `/${debugUrl.value}`;
+      fullUrl = `${baseUrl}${requestPath}`;
+    }
+  }
+
+  // 确保必填字段有默认值
+  const availableGroups = groups.value.filter(g => g.id);
+  const availableApis = pagedApis.value.filter(a => a.id);
+  
+  if (availableGroups.length === 0) {
+    ElMessage.error('没有可用的分组，请先创建分组');
+    return;
+  }
+  
+  if (availableApis.length === 0) {
+    ElMessage.error('没有可用的API，请先创建API');
+    return;
+  }
 
   const caseData = {
-    name: debugApi.value?.name || debugUrl.value || '新用例',
-    description: debugApi.value?.description || '',
-    group_id: debugApi.value?.group_id || 1,
-    api_id: debugApi.value?.id || 1,
+    name: (debugApi.value?.name || `调试用例-${new Date().getTime()}`).slice(0, 100),
+    description: debugApi.value?.description || `从接口调试自动生成的用例`,
+    group_id: debugApi.value?.group_id || availableGroups[0].id,
+    api_id: debugApi.value?.id || availableApis[0].id,
     method: debugMethod.value,
-    request_url: debugUrl.value,
-    params,
-    headers,
-    body,
+    request_url: fullUrl,
+    params: params || {},
+    headers: headers || {},
+    body: body || {},
     expected_status: 200,
     expected_response: {},
   };
   
+  console.log('保存用例数据:', caseData);
+  
   try {
-    await addCase(caseData);
+    const response = await createCase(caseData);
+    console.log('保存用例响应:', response);
     ElMessage.success('用例保存成功！');
   } catch (e) {
-    ElMessage.error('用例保存失败');
+    console.error('保存用例失败:', e);
+    ElMessage.error(`用例保存失败: ${e.response?.data?.detail || e.message || '未知错误'}`);
   }
 };
 
 const doDebugRequest = async () => {
+  console.log('doDebugRequest called');
+  console.log('debugUrl:', debugUrl.value);
+  console.log('debugMethod:', debugMethod.value);
+  console.log('debugEnvironment:', debugEnvironment.value);
+  
+  // 构建完整的请求URL
+  let fullUrl = debugUrl.value;
+  if (debugEnvironment.value) {
+    const selectedEnv = environments.value.find(env => env.id === debugEnvironment.value);
+    if (selectedEnv) {
+      // 拼接环境地址和请求地址
+      const baseUrl = selectedEnv.value.endsWith('/') ? selectedEnv.value.slice(0, -1) : selectedEnv.value;
+      const requestPath = debugUrl.value.startsWith('/') ? debugUrl.value : `/${debugUrl.value}`;
+      fullUrl = `${baseUrl}${requestPath}`;
+      console.log('Full URL with environment:', fullUrl);
+    }
+  }
+  
   let params = {};
   let data = undefined;
   let headers = {};
@@ -600,7 +713,7 @@ const doDebugRequest = async () => {
   }
   
   console.log('实际请求：', {
-    url: debugUrl.value,
+    url: fullUrl,
     method: debugMethod.value,
     headers,
     params,
@@ -609,14 +722,29 @@ const doDebugRequest = async () => {
   
   const start = Date.now();
   try {
-    const res = await axios({
-      url: debugUrl.value,
-      method: debugMethod.value.toLowerCase(),
-      headers,
-      params: debugParamType.value === 'params' ? params : undefined,
-      data,
-      responseType: 'text'
-    });
+    // 如果选择了环境，直接使用axios发送请求到完整URL
+    // 否则使用配置好的 request 实例
+    let res;
+    if (debugEnvironment.value) {
+      res = await axios({
+        url: fullUrl,
+        method: debugMethod.value.toLowerCase(),
+        headers,
+        params: debugParamType.value === 'params' ? params : undefined,
+        data,
+        responseType: 'text'
+      });
+    } else {
+      res = await request({
+        url: debugUrl.value,
+        method: debugMethod.value.toLowerCase(),
+        headers,
+        params: debugParamType.value === 'params' ? params : undefined,
+        data,
+        responseType: 'text'
+      });
+    }
+    
     debugResult.value = formatJson(res.data);
     debugStatus.value = res.status;
     debugTime.value = Date.now() - start;
@@ -844,6 +972,15 @@ function formatJson(data) {
 
 .view-options {
   margin-bottom: 12px;
+}
+
+/* 环境选择器样式 */
+:deep(.el-select-dropdown__item) {
+  padding: 8px 20px;
+}
+
+:deep(.el-select-dropdown__item div) {
+  width: 100%;
 }
 
 @media screen and (max-width: 768px) {

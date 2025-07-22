@@ -135,7 +135,7 @@ async def update_case_info(case_id: int, case: TestCaseUpdate, db: Session = Dep
         db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.delete("/cases/{case_id}", response_model=TestCaseOut)
+@router.delete("/cases/{case_id}")
 async def delete_case_info(case_id: int, db: Session = Depends(get_db)):
     """
     删除用例信息
@@ -144,7 +144,7 @@ async def delete_case_info(case_id: int, db: Session = Depends(get_db)):
         case_id (int): 用例ID
         db (Session): 数据库会话对象
     返回:
-        TestCaseOut: 删除的用例信息
+        dict: 删除结果信息
     """
     try:
         logger.info(f"Deleting test case with ID: {case_id}")
@@ -152,11 +152,14 @@ async def delete_case_info(case_id: int, db: Session = Depends(get_db)):
         if not db_case:
             raise HTTPException(status_code=404, detail="Test case not found")
         
+        # 保存用例名称用于日志
+        case_name = db_case.name
+        
         db.delete(db_case)
         db.commit()
         
-        logger.info(f"Successfully deleted test case with ID: {case_id}")
-        return db_case
+        logger.info(f"Successfully deleted test case with ID: {case_id}, name: {case_name}")
+        return {"success": True, "message": f"Test case '{case_name}' deleted successfully", "id": case_id}
     except HTTPException:
         raise
     except Exception as e:

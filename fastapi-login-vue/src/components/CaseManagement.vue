@@ -631,6 +631,63 @@
     }
   }
 }
+
+/* 运行结果对话框样式 */
+.result-header {
+  margin-bottom: 16px;
+}
+
+.result-header h4 {
+  margin: 0 0 8px 0;
+  color: #1f2937;
+  font-size: 16px;
+}
+
+.result-meta {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+
+.request-url {
+  font-size: 13px;
+  color: #6b7280;
+  word-break: break-all;
+}
+
+.result-content h5 {
+  margin: 0 0 8px 0;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.result-textarea :deep(.el-textarea__inner) {
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+}
+
+.request-details {
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 4px;
+  padding: 12px;
+  margin: 8px 0;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+}
+
+.request-details div {
+  margin-bottom: 8px;
+  word-break: break-all;
+}
+
+.request-details div:last-child {
+  margin-bottom: 0;
+}
 </style>
 <template>
   <div class="app-container">
@@ -685,7 +742,7 @@
               <el-table-column prop="description" label="描述" min-width="180" show-overflow-tooltip />
               <el-table-column label="所属分组" min-width="120">
                 <template #default="scope">
-                  <el-tag size="small" effect="plain">
+                  <el-tag size="small" effect="plain" class="group-tag">
                     {{ getGroupName(scope.row.group_id) }}
                   </el-tag>
                 </template>
@@ -732,8 +789,8 @@
             <!-- 分页 -->
             <div class="pagination-container">
               <el-pagination
-                v-model:currentPage="currentPage"
-                v-model:pageSize="pageSize"
+                v-model:current-page="currentPage"
+                v-model:page-size="pageSize"
                 :page-sizes="[10, 20, 50, 100]"
                 layout="total, sizes, prev, pager, next, jumper"
                 :total="total"
@@ -745,6 +802,54 @@
         </div>
       </el-main>
     </el-container>
+    
+    <!-- 运行结果对话框 -->
+    <el-dialog
+      v-model="runResultDialog"
+      title="用例运行结果"
+      width="60%"
+      :close-on-click-modal="false"
+    >
+      <div v-if="currentRunningCase">
+        <div class="result-header">
+          <h4>{{ currentRunningCase.name }}</h4>
+          <div class="result-meta">
+            <span>状态码: <el-tag :type="runStatus >= 200 && runStatus < 300 ? 'success' : 'danger'">{{ runStatus }}</el-tag></span>
+            <span>耗时: {{ runTime }}</span>
+            <span>方法: <el-tag>{{ currentRunningCase.method }}</el-tag></span>
+          </div>
+          <div class="request-url">
+            <strong>请求地址:</strong> {{ currentRunningCase.request_url }}
+          </div>
+        </div>
+        
+        <el-divider />
+        
+        <div class="result-content">
+          <h5>请求详情:</h5>
+          <div class="request-details">
+            <div><strong>请求方法:</strong> {{ currentRunningCase.method }}</div>
+            <div><strong>请求地址:</strong> {{ currentRunningCase.request_url }}</div>
+            <div v-if="currentRunningCase.params"><strong>请求参数:</strong> {{ JSON.stringify(currentRunningCase.params, null, 2) }}</div>
+            <div v-if="currentRunningCase.headers"><strong>请求头:</strong> {{ JSON.stringify(currentRunningCase.headers, null, 2) }}</div>
+            <div v-if="currentRunningCase.body"><strong>请求体:</strong> {{ JSON.stringify(currentRunningCase.body, null, 2) }}</div>
+          </div>
+          
+          <h5 style="margin-top: 20px;">响应结果:</h5>
+          <el-input
+            v-model="runResult"
+            type="textarea"
+            :rows="15"
+            readonly
+            class="result-textarea"
+          />
+        </div>
+      </div>
+      
+      <template #footer>
+        <el-button @click="runResultDialog = false">关闭</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -754,13 +859,17 @@ import { Search, Plus, Edit, Delete, VideoPlay, RefreshRight, Check } from '@ele
 import { getCases, addCase, updateCase, deleteCaseById } from '@/api/caseManage'
 import { getApiList } from '@/api/apiManage'
 import { getGroupList } from '@/api/groupManage'
+import { getEnvironments } from '@/api/environmentManage'
 import { ElMessageBox, ElMessage } from 'element-plus'
+import request from '@/utils/request'
+import axios from 'axios'
 
 // 状态管理
 const state = reactive({
   caseList: [],
   groupList: [],
   apiList: [],
+  environmentList: [],
   selectedGroup: null,
   search: '',
   loading: false,
@@ -768,6 +877,13 @@ const state = reactive({
   pageSize: 10,
   total: 0,
 });
+
+// 运行结果相关状态
+const runResultDialog = ref(false);
+const runResult = ref('');
+const runStatus = ref('');
+const runTime = ref('');
+const currentRunningCase = ref(null);
 
 // 分页的用例列表
 const pagedCaseList = computed(() => {
@@ -846,6 +962,17 @@ const loadCaseList = async () => {
   }
 };
 
+const loadEnvironmentList = async () => {
+  try {
+    const response = await getEnvironments();
+    state.environmentList = response.data || [];
+  } catch (error) {
+    console.error('Failed to load environment list:', error);
+    ElMessage.error(error.response?.data?.detail || '加载环境列表失败');
+    state.environmentList = [];
+  }
+};
+
 // 操作处理方法
 const handleViewDetail = (row) => {
   // TODO: 实现跳转到详情页的逻辑
@@ -869,20 +996,232 @@ const handleDelete = async (row) => {
       }
     );
     
-    await deleteCaseById(row.id);
-    ElMessage.success('删除成功');
+    console.log('Deleting case with ID:', row.id);
+    const response = await deleteCaseById(row.id);
+    console.log('Delete response:', response);
+    
+    ElMessage.success(response.data?.message || '删除成功');
     await loadCaseList();
   } catch (error) {
-    if (error !== 'cancel') {
-      console.error('Failed to delete case:', error);
-      ElMessage.error('删除失败');
+    if (error === 'cancel') {
+      console.log('User canceled deletion');
+      return;
+    }
+    
+    console.error('Failed to delete case:', error);
+    
+    // 更详细的错误处理
+    if (error.response) {
+      const status = error.response.status;
+      const message = error.response.data?.detail || error.response.data?.message || '删除失败';
+      
+      if (status === 404) {
+        ElMessage.error('用例不存在或已被删除');
+      } else if (status === 403) {
+        ElMessage.error('没有权限删除此用例');
+      } else if (status === 500) {
+        ElMessage.error('服务器内部错误，删除失败');
+      } else {
+        ElMessage.error(`删除失败: ${message}`);
+      }
+    } else if (error.request) {
+      ElMessage.error('网络错误，无法连接到服务器');
+    } else {
+      ElMessage.error('删除失败: ' + (error.message || '未知错误'));
     }
   }
 };
 
-const handleRun = (row) => {
-  // TODO: 实现运行功能
-  console.log('Run:', row);
+// 辅助函数
+function formatJson(data) {
+  if (typeof data === 'string') {
+    try {
+      return JSON.stringify(JSON.parse(data), null, 2);
+    } catch {
+      return data;
+    }
+  }
+  return JSON.stringify(data, null, 2);
+}
+
+const handleRun = async (row) => {
+  console.log('doDebugRequest called (from case run)');
+  console.log('Running case:', row);
+  console.log('debugMethod:', row.method);
+  
+  currentRunningCase.value = row;
+  
+  // 从用例数据中提取参数，模拟调试界面的数据结构
+  let debugUrl = row.request_url;
+  let debugMethod = row.method;
+  let debugEnvironment = null; // 用例暂时不支持环境选择，使用null
+  let debugParamType = 'json'; // 默认为json类型
+  let debugParamsList = [];
+  let debugJson = '';
+  let debugForm = '';
+  let debugHeaders = '';
+  
+  // 智能识别参数类型和转换数据格式
+  if (row.params && Object.keys(row.params).length > 0) {
+    // 如果有params数据，转换为params类型
+    debugParamType = 'params';
+    Object.entries(row.params).forEach(([key, value]) => {
+      debugParamsList.push({
+        key: key,
+        value: String(value),
+        type: typeof value === 'number' ? 'number' : 
+              typeof value === 'boolean' ? 'boolean' :
+              Array.isArray(value) ? 'array' : 'string',
+        desc: ''
+      });
+    });
+  } else if (row.body && Object.keys(row.body).length > 0) {
+    // 如果有body数据，判断是json还是form类型
+    const bodyData = row.body;
+    // 检查是否为OAuth或form类型数据
+    const hasOAuthFields = bodyData.client_id || bodyData.grant_type || bodyData.client_secret;
+    const isSimpleKeyValue = Object.values(bodyData).every(v => 
+      typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean'
+    );
+    
+    if (hasOAuthFields || isSimpleKeyValue) {
+      debugParamType = 'form';
+      debugForm = Object.entries(bodyData)
+        .map(([k, v]) => `${k}=${v}`)
+        .join('\n');
+    } else {
+      debugParamType = 'json';
+      debugJson = JSON.stringify(bodyData, null, 2);
+    }
+  }
+  
+  // 处理headers
+  if (row.headers && Object.keys(row.headers).length > 0) {
+    debugHeaders = JSON.stringify(row.headers, null, 2);
+  }
+  
+  console.log('智能识别的参数类型:', debugParamType);
+  console.log('转换后的调试数据:', {
+    debugUrl,
+    debugMethod,
+    debugParamType,
+    debugParamsList,
+    debugJson,
+    debugForm,
+    debugHeaders
+  });
+  
+  // === 以下代码与ApiInfoForm.vue中doDebugRequest完全一致 ===
+  
+  // 构建完整的请求URL
+  let fullUrl = debugUrl;
+  if (debugEnvironment) {
+    const selectedEnv = state.environmentList.find(env => env.id === debugEnvironment);
+    if (selectedEnv) {
+      // 拼接环境地址和请求地址
+      const baseUrl = selectedEnv.value.endsWith('/') ? selectedEnv.value.slice(0, -1) : selectedEnv.value;
+      const requestPath = debugUrl.startsWith('/') ? debugUrl : `/${debugUrl}`;
+      fullUrl = `${baseUrl}${requestPath}`;
+      console.log('Full URL with environment:', fullUrl);
+    }
+  }
+  
+  let params = {};
+  let data = undefined;
+  let headers = {};
+  // 处理header
+  try {
+    if (debugHeaders.trim()) headers = JSON.parse(debugHeaders);
+  } catch (e) {
+    runResult.value = 'Header格式错误，需为JSON字符串';
+    runResultDialog.value = true;
+    return;
+  }
+  // 处理参数
+  if (debugParamType === 'params') {
+    params = {};
+    debugParamsList.forEach(item => {
+      if (item.key) {
+        // 类型转换
+        let v = item.value;
+        if (item.type === 'number') v = Number(item.value);
+        else if (item.type === 'boolean') v = item.value === 'true' || item.value === true;
+        else if (item.type === 'array') {
+          try { v = JSON.parse(item.value); } catch { v = [item.value]; }
+        }
+        params[item.key] = v;
+      }
+    });
+  } else if (debugParamType === 'json') {
+    try {
+      data = debugJson.trim() ? JSON.parse(debugJson) : undefined;
+    } catch (e) {
+      runResult.value = 'JSON格式错误';
+      runResultDialog.value = true;
+      return;
+    }
+  } else if (debugParamType === 'form') {
+    data = new URLSearchParams();
+    debugForm.split('\n').filter(Boolean).forEach(line => {
+      const [k, v] = line.split('=');
+      data.append(k, v);
+    });
+    headers['Content-Type'] = 'application/x-www-form-urlencoded';
+  }
+  
+  console.log('实际请求：', {
+    url: fullUrl,
+    method: debugMethod,
+    headers,
+    params,
+    data
+  });
+  
+  const start = Date.now();
+  try {
+    // 如果选择了环境，直接使用axios发送请求到完整URL
+    // 否则使用配置好的 request 实例
+    let res;
+    if (debugEnvironment) {
+      res = await axios({
+        url: fullUrl,
+        method: debugMethod.toLowerCase(),
+        headers,
+        params: debugParamType === 'params' ? params : undefined,
+        data,
+        responseType: 'text'
+      });
+    } else {
+      res = await request({
+        url: debugUrl,
+        method: debugMethod.toLowerCase(),
+        headers,
+        params: debugParamType === 'params' ? params : undefined,
+        data,
+        responseType: 'text'
+      });
+    }
+    
+    runResult.value = formatJson(res.data);
+    runStatus.value = res.status;
+    runTime.value = Date.now() - start;
+    runResultDialog.value = true;
+    ElMessage.success('用例运行成功');
+  } catch (err) {
+    runResult.value = err?.response ? formatJson(err.response.data) : String(err);
+    runStatus.value = err?.response?.status || '';
+    runTime.value = Date.now() - start;
+    runResultDialog.value = true;
+    
+    // 根据状态码显示不同的消息
+    if (err?.response?.status === 401) {
+      ElMessage.warning('用例运行完成，但返回401未授权状态。请检查认证信息是否正确。');
+    } else if (err?.response?.status >= 400 && err?.response?.status < 500) {
+      ElMessage.warning(`用例运行完成，返回${err.response.status}状态码`);
+    } else {
+      ElMessage.error('用例运行失败');
+    }
+  }
 };
 
 // 分页处理
@@ -914,6 +1253,7 @@ onMounted(async () => {
       loadApiList(),
       loadGroupList(),
       loadCaseList(),
+      loadEnvironmentList(),
     ]);
   } catch (error) {
     console.error('Failed to initialize data:', error);
@@ -957,6 +1297,11 @@ defineExpose({
   handleSizeChange,
   handleSearch,
   openCaseForm,
+  runResultDialog,
+  runResult,
+  runStatus,
+  runTime,
+  currentRunningCase,
 });
 </script>
 

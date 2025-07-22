@@ -81,30 +81,30 @@ export async function deleteCaseById(id) {
 
 // 获取分组列表
 export function getGroups() {
-  return axios.get('/api/group')
+  return axios.get('/api/groups')
 }
 
 // 获取API列表
 export function getApis() {
-  return axios.get('/api/info')
+  return axios.get('/api/apis')
 }
 
 // 获取接口列表
 export function getApiList() {
-  return axios.get(`${base}/info`)
+  return axios.get(`${base}/apis`)
 }
 
 // 新增接口
 export function addApi(data) {
-  return axios.post(`${base}/info`, data)
+  return axios.post(`${base}/apis`, data)
 }
 
 // 更新接口
 export function updateApi(id, data) {
-  return axios.put(`${base}/info/${id}`, data)
+  return axios.put(`${base}/apis/${id}`, data)
 }
 
 // 删除接口
 export function deleteApi(id) {
-  return axios.delete(`${base}/info/${id}`)
+  return axios.delete(`${base}/apis/${id}`)
 }

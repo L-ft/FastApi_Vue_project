@@ -106,8 +106,6 @@ class ApiInfo(Base):
     group_id = Column(Integer, ForeignKey("api_group.id", ondelete="SET NULL"), nullable=True)
     env_id = Column(Integer, ForeignKey("environments.id", ondelete="SET NULL"), nullable=True)
     description = Column(String(255), nullable=True)
-    env_id = Column(Integer, ForeignKey("environments.id"), nullable=True)
-    description = Column(String(255), nullable=True)
 
 # ---------------- 用例管理模型 ----------------
 class CaseInfo(Base):
@@ -137,8 +135,8 @@ class CaseInfo(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(100), nullable=False)
     description = Column(String(255))
-    group_id = Column(Integer, ForeignKey("api_group.id"))
-    api_id = Column(Integer, ForeignKey("api_info.id"))
+    group_id = Column(Integer, ForeignKey("api_group.id", ondelete="SET NULL"), nullable=True)
+    api_id = Column(Integer, ForeignKey("api_info.id", ondelete="SET NULL"), nullable=True)
     request_data = Column(String(255))
     params = Column(String(1000))  # 可根据实际需要调整长度
     request_header = Column(String(255))
