@@ -688,6 +688,36 @@
 .request-details div:last-child {
   margin-bottom: 0;
 }
+
+/* 提取变量对话框样式 */
+.extract-variable-dialog .el-form-item {
+  margin-bottom: 18px;
+}
+
+.extract-variable-dialog .el-input__inner {
+  font-family: 'Courier New', monospace;
+}
+
+.extract-variable-dialog .el-textarea__inner {
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+}
+
+.jsonpath-help {
+  margin-top: 8px;
+  padding: 8px;
+  background: #f8f9fa;
+  border-radius: 4px;
+  border-left: 3px solid #409eff;
+}
+
+.jsonpath-help code {
+  background: #e9ecef;
+  padding: 2px 4px;
+  border-radius: 2px;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+}
 </style>
 <template>
   <div class="app-container">
@@ -847,7 +877,68 @@
       </div>
       
       <template #footer>
+        <el-button type="primary" @click="openExtractVariableDialog">提取变量</el-button>
         <el-button @click="runResultDialog = false">关闭</el-button>
+      </template>
+    </el-dialog>
+
+    <!-- 提取变量对话框 -->
+    <el-dialog
+      v-model="extractVariableDialog"
+      title="提取变量"
+      width="50%"
+      :close-on-click-modal="false"
+      class="extract-variable-dialog"
+    >
+      <el-form :model="extractForm" label-width="100px">
+        <el-form-item label="选择环境">
+          <el-select v-model="extractForm.envId" placeholder="请选择环境" style="width: 100%">
+            <el-option
+              v-for="env in state.environmentList"
+              :key="env.id"
+              :label="env.name"
+              :value="env.id"
+            />
+          </el-select>
+        </el-form-item>
+        
+        <el-form-item label="变量名">
+          <el-input v-model="extractForm.key" placeholder="请输入变量名" />
+        </el-form-item>
+        
+        <el-form-item label="JSONPath">
+          <el-input v-model="extractForm.jsonPath" placeholder="例如: access_token 或 data.token 或 data[0].id">
+            <template #prepend>$.</template>
+          </el-input>
+          <div class="jsonpath-help">
+            <small>
+              常用示例：<br/>
+              • <code>access_token</code> - 提取根级别的access_token字段<br/>
+              • <code>data.token</code> - 提取data对象中的token字段<br/>
+              • <code>data[0].id</code> - 提取data数组第一个元素的id字段<br/>
+              • <code>data[*].name</code> - 提取data数组中所有元素的name字段
+            </small>
+          </div>
+        </el-form-item>
+        
+        <el-form-item label="提取结果">
+          <el-input 
+            v-model="extractForm.value" 
+            type="textarea" 
+            :rows="3" 
+            readonly 
+            placeholder="请输入JSONPath后预览提取结果"
+          />
+        </el-form-item>
+        
+        <el-form-item>
+          <el-button type="primary" @click="previewExtractValue">预览提取</el-button>
+        </el-form-item>
+      </el-form>
+      
+      <template #footer>
+        <el-button @click="extractVariableDialog = false">取消</el-button>
+        <el-button type="primary" @click="saveExtractedVariable" :disabled="!extractForm.value">保存变量</el-button>
       </template>
     </el-dialog>
   </div>
@@ -859,10 +950,11 @@ import { Search, Plus, Edit, Delete, VideoPlay, RefreshRight, Check } from '@ele
 import { getCases, addCase, updateCase, deleteCaseById } from '@/api/caseManage'
 import { getApiList } from '@/api/apiManage'
 import { getGroupList } from '@/api/groupManage'
-import { getEnvironments } from '@/api/environmentManage'
+import { getEnvironments, addEnvironmentVariable } from '@/api/environmentManage'
 import { ElMessageBox, ElMessage } from 'element-plus'
 import request from '@/utils/request'
 import axios from 'axios'
+import jp from 'jsonpath'
 
 // 状态管理
 const state = reactive({
@@ -884,6 +976,15 @@ const runResult = ref('');
 const runStatus = ref('');
 const runTime = ref('');
 const currentRunningCase = ref(null);
+
+// 提取变量相关状态
+const extractVariableDialog = ref(false);
+const extractForm = ref({
+  envId: null,
+  key: '',
+  jsonPath: '',
+  value: ''
+});
 
 // 分页的用例列表
 const pagedCaseList = computed(() => {
@@ -921,6 +1022,13 @@ const getGroupName = (groupId) => {
   if (!groupId) return '-';
   const group = state.groupList.find(g => g.id === groupId);
   return group ? group.name : '-';
+};
+
+// 环境相关方法
+const getEnvironmentName = (envId) => {
+  if (!envId) return '-';
+  const env = state.environmentList.find(e => e.id === envId);
+  return env ? env.name : '-';
 };
 
 // 加载数据方法
@@ -1224,6 +1332,96 @@ const handleRun = async (row) => {
   }
 };
 
+// 提取变量相关方法
+const openExtractVariableDialog = () => {
+  // 重置表单
+  extractForm.value = {
+    envId: null,
+    key: '',
+    jsonPath: '',
+    value: ''
+  };
+  extractVariableDialog.value = true;
+};
+
+const previewExtractValue = () => {
+  if (!extractForm.value.jsonPath) {
+    ElMessage.warning('请输入JSONPath');
+    return;
+  }
+  
+  try {
+    // 解析响应结果
+    const responseData = JSON.parse(runResult.value);
+    
+    // 构建完整的JSONPath，如果不是以$开头就添加$
+    let jsonPath = extractForm.value.jsonPath;
+    if (!jsonPath.startsWith('$')) {
+      jsonPath = '$.' + jsonPath;
+    }
+    
+    // 使用JSONPath库进行提取
+    const results = jp.query(responseData, jsonPath);
+    
+    if (results.length === 0) {
+      throw new Error('未找到匹配的数据');
+    }
+    
+    // 如果只有一个结果，直接使用；否则返回数组
+    const result = results.length === 1 ? results[0] : results;
+    
+    extractForm.value.value = typeof result === 'string' ? result : JSON.stringify(result);
+    ElMessage.success(`提取成功，找到 ${results.length} 个匹配项`);
+  } catch (error) {
+    console.error('JSONPath提取失败:', error);
+    ElMessage.error(`提取失败: ${error.message || '无效的JSONPath'}`);
+    extractForm.value.value = '';
+  }
+};
+
+const saveExtractedVariable = async () => {
+  if (!extractForm.value.envId) {
+    ElMessage.warning('请选择环境');
+    return;
+  }
+  
+  if (!extractForm.value.key) {
+    ElMessage.warning('请输入变量名');
+    return;
+  }
+  
+  if (!extractForm.value.value) {
+    ElMessage.warning('请先预览提取结果');
+    return;
+  }
+  
+  try {
+    const variableData = {
+      env_id: extractForm.value.envId,
+      key: extractForm.value.key,
+      value: extractForm.value.value
+    };
+    
+    await addEnvironmentVariable(variableData);
+    
+    // 获取环境名称用于提示
+    const envName = getEnvironmentName(extractForm.value.envId);
+    ElMessage.success(`变量 "${extractForm.value.key}" 已保存到环境 "${envName}"`);
+    extractVariableDialog.value = false;
+    
+    // 重置表单
+    extractForm.value = {
+      envId: null,
+      key: '',
+      jsonPath: '',
+      value: ''
+    };
+  } catch (error) {
+    console.error('保存变量失败:', error);
+    ElMessage.error(error.response?.data?.detail || '保存变量失败');
+  }
+};
+
 // 分页处理
 const handleCurrentChange = (val) => {
   state.currentPage = val;
@@ -1289,6 +1487,7 @@ defineExpose({
   pagedCaseList,
   getApiInfo,
   getGroupName,
+  getEnvironmentName,
   handleViewDetail,
   handleEdit,
   handleDelete,
@@ -1302,6 +1501,11 @@ defineExpose({
   runStatus,
   runTime,
   currentRunningCase,
+  extractVariableDialog,
+  extractForm,
+  openExtractVariableDialog,
+  previewExtractValue,
+  saveExtractedVariable,
 });
 </script>
 

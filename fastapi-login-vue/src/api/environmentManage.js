@@ -1,37 +1,63 @@
-import axios from 'axios'
-
-const base = '/api'
+import request from '@/utils/request'
 
 // 环境管理API
 export function getEnvironments() {
-  return axios.get(`${base}/environments`)
+  return request({
+    url: '/api/environments',
+    method: 'get'
+  })
 }
 
 export function addEnvironment(data) {
-  return axios.post(`${base}/environments`, data)
+  return request({
+    url: '/api/environments',
+    method: 'post',
+    data
+  })
 }
 
 export function updateEnvironment(env_id, data) {
-  return axios.put(`${base}/environments/${env_id}`, data)
+  return request({
+    url: `/api/environments/${env_id}`,
+    method: 'put',
+    data
+  })
 }
 
 export function deleteEnvironment(env_id) {
-  return axios.delete(`${base}/environments/${env_id}`)
+  return request({
+    url: `/api/environments/${env_id}`,
+    method: 'delete'
+  })
 }
 
 // 环境变量管理API
 export function getEnvironmentVariables() {
-  return axios.get(`${base}/env-variables`)
+  return request({
+    url: '/api/env-variables',
+    method: 'get'
+  })
 }
 
 export function addEnvironmentVariable(data) {
-  return axios.post(`${base}/env-variables`, data)
+  return request({
+    url: '/api/env-variables',
+    method: 'post',
+    data
+  })
 }
 
 export function updateEnvironmentVariable(var_id, data) {
-  return axios.put(`${base}/env-variables/${var_id}`, data)
+  return request({
+    url: `/api/env-variables/${var_id}`,
+    method: 'put',
+    data
+  })
 }
 
 export function deleteEnvironmentVariable(var_id) {
-  return axios.delete(`${base}/env-variables/${var_id}`)
+  return request({
+    url: `/api/env-variables/${var_id}`,
+    method: 'delete'
+  })
 }

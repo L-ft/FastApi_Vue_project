@@ -46,7 +46,7 @@ const rememberMe = ref(true);
 
 const submitLogin = async () => {
   try {
-    const response = await axios.post('http://localhost:8000/token', new URLSearchParams({
+    const response = await axios.post('http://localhost:8001/token', new URLSearchParams({
       username: loginData.value.username,
       password: loginData.value.password
     }));

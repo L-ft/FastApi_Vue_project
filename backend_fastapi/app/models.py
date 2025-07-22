@@ -55,7 +55,7 @@ class EnvironmentVariable(Base):
     id = Column(Integer, primary_key=True, index=True)
     env_id = Column(Integer, ForeignKey("environments.id", ondelete="CASCADE"), nullable=False)
     key = Column("key", String(50), nullable=False)  # 明确指定字段名为key
-    value = Column(String(500), nullable=False)
+    value = Column(String(2000), nullable=False)  # 增加长度到2000以支持长token
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     

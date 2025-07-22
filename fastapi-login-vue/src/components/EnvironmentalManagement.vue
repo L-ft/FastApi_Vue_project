@@ -257,7 +257,12 @@ const fetchEnvVars = async () => {
   try {
     loading.value = true
     const res = await getEnvironmentVariables()
-    envVars.value = res.data
+    
+    // 为每个环境变量添加环境名称
+    envVars.value = res.data.map(envVar => ({
+      ...envVar,
+      env_name: getEnvironmentName(envVar.env_id)
+    }))
   } catch (error) {
     console.error('获取环境变量失败:', error)
     ElMessage.error('获取环境变量失败')
@@ -313,6 +318,13 @@ const handleSearch = async () => {
 
 const handleEnvVarSearch = () => {
   envVarPage.value = 1
+}
+
+// 工具函数：根据环境ID获取环境名称
+const getEnvironmentName = (envId) => {
+  if (!envId) return '-';
+  const environment = envs.value.find(env => env.id === envId);
+  return environment ? environment.name : `环境ID: ${envId}`;
 }
 
 const editEnvVar = (row) => {
@@ -395,9 +407,10 @@ const submitEnvVarForm = async () => {
 }
 
 // 初始化数据
-onMounted(() => {
-  fetchEnvs()
-  fetchEnvVars()
+onMounted(async () => {
+  // 先加载环境列表，再加载环境变量（确保能正确映射环境名称）
+  await fetchEnvs()
+  await fetchEnvVars()
 })
 
 const filteredEnvs = computed(() => {

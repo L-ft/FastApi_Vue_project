@@ -4,7 +4,7 @@ import { ElMessage } from 'element-plus'
 // 创建axios实例
 
 // 设置默认的baseURL为8000端口（FastAPI端口）
-const defaultBase = 'http://127.0.0.1:8000';
+const defaultBase = 'http://127.0.0.1:8001';
 const service = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || defaultBase, // api的base_url
   timeout: 15000, // 请求超时时间
