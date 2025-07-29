@@ -799,6 +799,19 @@
                   <span v-else class="no-api">-</span>
                 </template>
               </el-table-column>
+              <el-table-column label="参数类型" min-width="100">
+                <template #default="scope">
+                  <el-tag 
+                    size="small" 
+                    :type="scope.row.param_type === 'params' ? 'success' : 
+                           scope.row.param_type === 'json' ? 'warning' : 'info'"
+                  >
+                    {{ scope.row.param_type === 'params' ? 'Params' : 
+                       scope.row.param_type === 'json' ? 'JSON' : 
+                       scope.row.param_type === 'form' ? 'Form' : 'Unknown' }}
+                  </el-tag>
+                </template>
+              </el-table-column>
               <el-table-column label="操作" width="200" fixed="right">
                 <template #default="scope">
                   <el-button-group>
@@ -955,6 +968,10 @@ import { ElMessageBox, ElMessage } from 'element-plus'
 import request from '@/utils/request'
 import axios from 'axios'
 import jp from 'jsonpath'
+import { useEnvironmentVariables } from '@/composables/useEnvironmentVariables'
+
+// 环境变量处理
+const { envUtils, replaceEnvVars } = useEnvironmentVariables()
 
 // 状态管理
 const state = reactive({
@@ -1074,6 +1091,19 @@ const loadEnvironmentList = async () => {
   try {
     const response = await getEnvironments();
     state.environmentList = response.data || [];
+    
+    // 更新环境变量工具
+    if (envUtils && state.environmentList.length > 0) {
+      // 获取所有环境的变量
+      const allVariables = [];
+      state.environmentList.forEach(env => {
+        if (env.variables && env.variables.length > 0) {
+          allVariables.push(...env.variables);
+        }
+      });
+      envUtils.setVariables(allVariables);
+      console.log('CaseManagement: 环境变量已更新', allVariables.length, '个变量');
+    }
   } catch (error) {
     console.error('Failed to load environment list:', error);
     ElMessage.error(error.response?.data?.detail || '加载环境列表失败');
@@ -1163,16 +1193,17 @@ const handleRun = async (row) => {
   let debugUrl = row.request_url;
   let debugMethod = row.method;
   let debugEnvironment = null; // 用例暂时不支持环境选择，使用null
-  let debugParamType = 'json'; // 默认为json类型
+  let debugParamType = row.param_type || 'params'; // 使用保存的参数类型
   let debugParamsList = [];
   let debugJson = '';
   let debugForm = '';
   let debugHeaders = '';
   
-  // 智能识别参数类型和转换数据格式
-  if (row.params && Object.keys(row.params).length > 0) {
-    // 如果有params数据，转换为params类型
-    debugParamType = 'params';
+  console.log('使用保存的参数类型:', debugParamType);
+  
+  // 根据保存的参数类型转换数据格式
+  if (debugParamType === 'params' && row.params && Object.keys(row.params).length > 0) {
+    // params类型：转换为参数列表格式
     Object.entries(row.params).forEach(([key, value]) => {
       debugParamsList.push({
         key: key,
@@ -1183,24 +1214,14 @@ const handleRun = async (row) => {
         desc: ''
       });
     });
-  } else if (row.body && Object.keys(row.body).length > 0) {
-    // 如果有body数据，判断是json还是form类型
-    const bodyData = row.body;
-    // 检查是否为OAuth或form类型数据
-    const hasOAuthFields = bodyData.client_id || bodyData.grant_type || bodyData.client_secret;
-    const isSimpleKeyValue = Object.values(bodyData).every(v => 
-      typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean'
-    );
-    
-    if (hasOAuthFields || isSimpleKeyValue) {
-      debugParamType = 'form';
-      debugForm = Object.entries(bodyData)
-        .map(([k, v]) => `${k}=${v}`)
-        .join('\n');
-    } else {
-      debugParamType = 'json';
-      debugJson = JSON.stringify(bodyData, null, 2);
-    }
+  } else if (debugParamType === 'json' && row.body && Object.keys(row.body).length > 0) {
+    // json类型：转换为JSON字符串
+    debugJson = JSON.stringify(row.body, null, 2);
+  } else if (debugParamType === 'form' && row.body && Object.keys(row.body).length > 0) {
+    // form类型：转换为form格式
+    debugForm = Object.entries(row.body)
+      .map(([k, v]) => `${k}=${v}`)
+      .join('\n');
   }
   
   // 处理headers
@@ -1250,21 +1271,32 @@ const handleRun = async (row) => {
     params = {};
     debugParamsList.forEach(item => {
       if (item.key) {
+        // 环境变量替换
+        const resolvedKey = envUtils ? envUtils.replaceVariables(item.key) : replaceEnvVars(item.key);
+        let resolvedValue = envUtils ? envUtils.replaceVariables(item.value) : replaceEnvVars(item.value);
+        
         // 类型转换
-        let v = item.value;
-        if (item.type === 'number') v = Number(item.value);
-        else if (item.type === 'boolean') v = item.value === 'true' || item.value === true;
+        if (item.type === 'number') resolvedValue = Number(resolvedValue);
+        else if (item.type === 'boolean') resolvedValue = resolvedValue === 'true' || resolvedValue === true;
         else if (item.type === 'array') {
-          try { v = JSON.parse(item.value); } catch { v = [item.value]; }
+          try { resolvedValue = JSON.parse(resolvedValue); } catch { resolvedValue = [resolvedValue]; }
         }
-        params[item.key] = v;
+        
+        params[resolvedKey] = resolvedValue;
+        console.log(`参数: ${resolvedKey} = ${resolvedValue} (${item.type}) [原始: ${item.key}=${item.value}]`);
       }
     });
   } else if (debugParamType === 'json') {
     try {
-      data = debugJson.trim() ? JSON.parse(debugJson) : undefined;
+      // 先进行环境变量替换，再解析JSON
+      const resolvedJsonString = envUtils ? envUtils.replaceVariables(debugJson) : replaceEnvVars(debugJson);
+      console.log('JSON环境变量替换前:', debugJson);
+      console.log('JSON环境变量替换后:', resolvedJsonString);
+      
+      data = resolvedJsonString.trim() ? JSON.parse(resolvedJsonString) : undefined;
+      console.log('解析后的JSON数据:', data);
     } catch (e) {
-      runResult.value = 'JSON格式错误';
+      runResult.value = 'JSON格式错误或环境变量替换失败';
       runResultDialog.value = true;
       return;
     }
@@ -1272,7 +1304,14 @@ const handleRun = async (row) => {
     data = new URLSearchParams();
     debugForm.split('\n').filter(Boolean).forEach(line => {
       const [k, v] = line.split('=');
-      data.append(k, v);
+      if (k && v !== undefined) {
+        // 环境变量替换
+        const resolvedKey = envUtils ? envUtils.replaceVariables(k.trim()) : replaceEnvVars(k.trim());
+        const resolvedValue = envUtils ? envUtils.replaceVariables(v.trim()) : replaceEnvVars(v.trim());
+        
+        data.append(resolvedKey, resolvedValue);
+        console.log(`Form数据: ${resolvedKey} = ${resolvedValue} [原始: ${k.trim()}=${v.trim()}]`);
+      }
     });
     headers['Content-Type'] = 'application/x-www-form-urlencoded';
   }

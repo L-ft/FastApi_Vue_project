@@ -144,6 +144,7 @@ class CaseInfo(Base):
     body = Column(String(2000))  # 可根据实际需要调整长度
     method = Column(String(10))
     request_url = Column(String(255))
+    param_type = Column(String(20), default='params')  # 参数类型：'params', 'json', 'form'
     response_data = Column(String(255))
     response_header = Column(String(255))
     response_status = Column(String(10))

@@ -15,11 +15,25 @@ const service = axios.create({
 service.interceptors.request.use(
   config => {
     // 在发送请求之前做些什么
-    const token = localStorage.getItem('token')
-    if (token) {
-      config.headers['Authorization'] = `Bearer ${token}`
+    console.log('Request拦截器 - 检查Authorization头:', config.headers);
+    
+    // 检查是否已经手动设置了Authorization头
+    const hasManualAuth = config.headers && 
+      (config.headers['Authorization'] || config.headers['authorization']);
+    
+    if (!hasManualAuth) {
+      // 只有在没有手动设置Authorization头时，才从localStorage获取token
+      const token = localStorage.getItem('token');
+      if (token) {
+        config.headers['Authorization'] = `Bearer ${token}`;
+        console.log('Request拦截器 - 自动添加Authorization头:', `Bearer ${token.substring(0, 20)}...`);
+      }
+    } else {
+      console.log('Request拦截器 - 检测到手动设置的Authorization头，跳过自动添加');
     }
-    return config
+    
+    console.log('Request拦截器 - 最终请求头:', config.headers);
+    return config;
   },
   error => {
     // 对请求错误做些什么

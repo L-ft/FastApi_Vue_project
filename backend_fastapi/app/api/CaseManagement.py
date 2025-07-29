@@ -42,6 +42,7 @@ async def get_case_info(db: Session = Depends(get_db)):
                 api_id=item.api_id,
                 method=item.method,
                 request_url=item.request_url,
+                param_type=item.param_type or 'params',  # 添加param_type字段
                 params=to_dict_safe(item.params),
                 headers=to_dict_safe(item.headers),
                 body=to_dict_safe(item.body),

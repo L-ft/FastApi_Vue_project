@@ -175,6 +175,7 @@ class TestCaseCreate(BaseModel):
     api_id: int
     method: str
     request_url: str
+    param_type: str = 'params'  # 参数类型：'params', 'json', 'form'
     params: Optional[Dict[str, Any]]
     headers: Optional[Dict[str, Any]]
     body: Optional[Dict[str, Any]]
@@ -206,6 +207,7 @@ class TestCaseOut(BaseModel):
     api_id: int
     method: str
     request_url: str
+    param_type: str = 'params'  # 参数类型：'params', 'json', 'form'
     params: Optional[Dict[str, Any]]
     headers: Optional[Dict[str, Any]]
     body: Optional[Dict[str, Any]]
@@ -236,6 +238,7 @@ class TestCaseUpdate(BaseModel):
     api_id: Optional[int] = None
     method: Optional[str] = None
     request_url: Optional[str] = None
+    param_type: Optional[str] = None  # 参数类型：'params', 'json', 'form'
     params: Optional[Dict[str, Any]] = None
     headers: Optional[Dict[str, Any]] = None
     body: Optional[Dict[str, Any]] = None

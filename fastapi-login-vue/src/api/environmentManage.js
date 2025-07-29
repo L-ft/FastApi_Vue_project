@@ -32,9 +32,10 @@ export function deleteEnvironment(env_id) {
 }
 
 // 环境变量管理API
-export function getEnvironmentVariables() {
+export function getEnvironmentVariables(env_id = null) {
+  const url = env_id ? `/api/env-variables?env_id=${env_id}` : '/api/env-variables'
   return request({
-    url: '/api/env-variables',
+    url,
     method: 'get'
   })
 }
@@ -59,5 +60,40 @@ export function deleteEnvironmentVariable(var_id) {
   return request({
     url: `/api/env-variables/${var_id}`,
     method: 'delete'
+  })
+}
+
+// 批量操作环境变量
+export function batchUpdateEnvironmentVariables(data) {
+  return request({
+    url: '/api/env-variables/batch',
+    method: 'put',
+    data
+  })
+}
+
+// 导入环境变量
+export function importEnvironmentVariables(data) {
+  return request({
+    url: '/api/env-variables/import',
+    method: 'post',
+    data
+  })
+}
+
+// 导出环境变量
+export function exportEnvironmentVariables(env_id) {
+  return request({
+    url: `/api/env-variables/export?env_id=${env_id}`,
+    method: 'get'
+  })
+}
+
+// 复制环境变量到其他环境
+export function copyEnvironmentVariables(from_env_id, to_env_id) {
+  return request({
+    url: '/api/env-variables/copy',
+    method: 'post',
+    data: { from_env_id, to_env_id }
   })
 }
